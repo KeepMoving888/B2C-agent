@@ -10,7 +10,7 @@ try:
 except ImportError:
     from typing_extensions import Literal
 
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -147,6 +147,7 @@ class Settings(BaseSettings):
     project_root: Path = Path(__file__).resolve().parent.parent.parent
     data_dir: Path = project_root / "data"
     docs_dir: Path = project_root / "data" / "knowledge_base"
+    local_model_dir: Path = project_root / "models" / "local_model"
 
     # 性能优化配置 - 确保响应时效 < 2秒
     enable_cache: bool = True
@@ -168,6 +169,21 @@ class Settings(BaseSettings):
     # 异常处理配置
     fallback_enabled: bool = True
     fallback_response: str = "抱歉，系统出现技术问题，请稍后重试或联系我们的客服团队。"
+
+    @field_validator("vector_db_provider", mode="before")
+    @classmethod
+    def normalize_vector_db_provider(cls, v):
+        """兼容 .env 中带注释或大小写不一致的值。"""
+        if isinstance(v, str):
+            value = v.split("#", 1)[0].strip().lower()
+            alias_map = {
+                "chroma": "chromadb",
+                "chroma_db": "chromadb",
+                "pine": "pinecone",
+            }
+            value = alias_map.get(value, value)
+            return value
+        return v
 
     model_config = {"env_file": ".env", "extra": "ignore"}
 

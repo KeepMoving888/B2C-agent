@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+app.log
+
+# Data
+/data/
+
+# Build
+/build/
+/dist/
+*.egg-info/
+
+# Docker
+/docker-compose.override.yml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test
+.pytest_cache/
+.tox/
+
+# Coverage
+coverage.xml
+.coverage

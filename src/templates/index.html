@@ -70,6 +70,11 @@
             margin-right: auto;
             position: relative;
         }
+
+        .message p {
+            white-space: pre-line;
+            line-height: 1.75;
+        }
         
         .message-info {
             font-size: 10px;
@@ -240,6 +245,10 @@
         const platformSelect = document.getElementById('platform');
         const statusDiv = document.getElementById('status');
         const modelInfoDiv = document.getElementById('model-info');
+
+        // 会话ID：用于后端做语气去重与平台锁定
+        const sessionId = localStorage.getItem('b2c_session_id') || ('sid_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10));
+        localStorage.setItem('b2c_session_id', sessionId);
         
         // 简单的语言检测
         function detectLanguage(text) {
@@ -316,6 +325,7 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
+                    session_id: sessionId,
                     message: message,
                     language: detectedLanguage,
                     platform: detectedPlatform
