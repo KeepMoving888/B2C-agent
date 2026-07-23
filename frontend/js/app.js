@@ -109,10 +109,17 @@ function genConversations(platform){
 
 /* ============ 渲染会话列表 ============ */
 function renderConvList(filter=''){
-  // 更新各平台未读红点
+  // 更新各平台未读红点（从 window._platformUnread 读取，确保所有平台都有红点）
   const platforms=['amazon','aliexpress','ebay','shopify','rakuten','email'];
   platforms.forEach(pf=>{
-    const unread=state.conversations.filter(c=>c.platform===pf).reduce((s,c)=>s+(c.unread||0),0);
+    // 当前平台的未读数从会话列表实时统计，其他平台用预生成数据
+    let unread;
+    if(pf===state.platform){
+      unread=state.conversations.reduce((s,c)=>s+(c.unread||0),0);
+      window._platformUnread[pf]=unread;
+    }else{
+      unread=(window._platformUnread&&window._platformUnread[pf])||0;
+    }
     const el=document.getElementById('unread-'+pf);
     if(el){
       if(unread>0){el.textContent=unread;el.style.display='flex'}
@@ -313,7 +320,7 @@ function buildMsg(m){
       ${m.ai?'<div class="ai-flag">✦ AI辅助</div>':''}
       ${agentBadge}
       ${chainBadge}
-      ${m.agent&&window.AppConfig.showAgentRoute&&m.agent!==''?`<span class="agent-route">${m.agent}</span>`:''}
+
       ${handoffTag}
       <div class="bubble">
         ${escapeHtml(m.text)}
@@ -727,143 +734,47 @@ function genOfflineSuggestion(conv,customerMsg){
 }
 
 async function triggerAISuggestion(conv,customerMsg){
-  // 注入骨架屏+错误处理样式（仅注入一次，合并为一处）
-  // 离线模式直接生成建议（不等待API超时）
-  if(!window.AppConfig.online){
-    console.log('[AI建议] 离线模式，直接生成建议');
-    const offlineResult=genOfflineSuggestion(conv,customerMsg);
-    // 仍然显示加载动画500ms，然后渲染
-    const cardId='ai-'+Date.now();
-    const card=document.createElement('div');
-    card.className='ai-suggestion-card loading';
-    card.id=cardId;
-    card.innerHTML='<div class="ai-card-header"><span class="ai-card-icon">✦</span><span class="ai-card-title">AI 建议回复</span></div><div class="ai-card-body"><div class="ai-card-loading"><div class="ai-step-spinner"></div><span style="margin-left:8px;color:#94a3b8;font-size:12px">AI分析中...</span></div></div>';
-    document.getElementById('chatFlow').appendChild(card);
-    document.getElementById('chatFlow').scrollTop=document.getElementById('chatFlow').scrollHeight;
-    setTimeout(()=>{
-      renderSuggestionCard(cardId,conv,offlineResult,customerMsg);
-    },800);
-    return;
-  }
-  if(!document.getElementById('ai-loading-style')){
-    const st=document.createElement('style');
-    st.id='ai-loading-style';
-    st.textContent=`
-      .ai-step-spinner{width:14px;height:14px;border:2px solid #e0e7ff;border-top-color:#6366f1;border-radius:50%;animation:ai-spin 0.8s linear infinite;flex-shrink:0}
-      .ai-step-text{font-size:12px;color:#4f46e5;font-weight:500}
-      @keyframes ai-spin{to{transform:rotate(360deg)}}
-      .ai-card-error .err-msg{color:#dc2626;font-size:13px;font-weight:600;margin-bottom:4px}
-      .ai-card-error .err-tip{color:#94a3b8;font-size:11px;margin-bottom:8px;line-height:1.4}
-      .ai-card-error .err-actions{display:flex;gap:6px;margin-top:6px}
-      .ai-card-error .err-actions .action-btn{font-size:11px;padding:4px 10px;cursor:pointer}
-      .ai-card-error .err-actions .retry{background:#6366f1;color:#fff;border:none;border-radius:6px}
-      .ai-card-error .err-actions .retry:hover{background:#4f46e5}
-      .ai-card-error .err-actions .reject{background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;border-radius:6px}
-    `;
-    document.head.appendChild(st);
-  }
-
-  // 显示"AI分析中"卡片（专业加载动画）
-  const cardId='ai-card-'+Date.now();
+  // 统一方案：无论在线/离线，先用本地规则引擎立即生成建议并显示
+  // 在线模式下后台异步调用API，如果返回更好结果则更新卡片
+  console.log('[AI建议] 触发，模式:', window.AppConfig.online ? '在线' : '离线');
+  const offlineResult=genOfflineSuggestion(conv,customerMsg);
+  const cardId='ai-'+Date.now();
   const card=document.createElement('div');
   card.className='ai-suggestion-card loading';
   card.id=cardId;
-  const modeText = window.AppConfig.online ? (window.AppConfig.modeLabel || '在线') : '离线模式';
-  card.innerHTML=`
-    <div class="ai-card-header">
-      <span class="ai-card-icon">✦</span>
-      <span class="ai-card-title">AI 智能分析中...</span>
-      <span class="ai-card-mode" style="font-size:10px;color:#6366f1;background:#e0e7ff;padding:2px 8px;border-radius:6px">${modeText}</span>
-      <span class="ai-card-close" onclick="this.parentElement.parentElement.remove()">✕</span>
-    </div>
-    <div class="ai-card-body">
-      <div class="ai-card-skeleton">
-        <div style="display:flex;align-items:center;gap:8px;padding:6px 0">
-          <div class="ai-step-spinner"></div>
-          <span class="ai-step-text">正在识别客户意图...</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;padding:4px 0">
-          <div class="ai-step-spinner" style="animation-delay:0.3s"></div>
-          <span class="ai-step-text" style="color:#94a3b8">路由多智能体协作...</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;padding:4px 0">
-          <div class="ai-step-spinner" style="animation-delay:0.6s"></div>
-          <span class="ai-step-text" style="color:#94a3b8">检索RAG知识库...</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;padding:4px 0">
-          <div class="ai-step-spinner" style="animation-delay:0.9s"></div>
-          <span class="ai-step-text" style="color:#94a3b8">生成建议回复...</span>
-        </div>
-      </div>
-    </div>
-  `;
-
+  const modeText=window.AppConfig.online?(window.AppConfig.modeLabel||'在线'):'离线模式';
+  card.innerHTML='<div class="ai-card-header"><span class="ai-card-icon">✦</span><span class="ai-card-title">AI 建议回复</span><span class="ai-card-mode" style="font-size:10px;color:#6366f1;background:#e0e7ff;padding:2px 8px;border-radius:6px">'+modeText+'</span></div><div class="ai-card-body"><div class="ai-card-loading"><div class="ai-step-spinner" style="width:14px;height:14px;border:2px solid #e0e7ff;border-top-color:#6366f1;border-radius:50%;animation:ai-spin 0.8s linear infinite;flex-shrink:0;display:inline-block"></div><span style="margin-left:8px;color:#94a3b8;font-size:12px">AI分析中...</span></div></div>';
+  // 注入 spinner 动画（仅一次）
+  if(!document.getElementById('ai-spin-style')){
+    const st=document.createElement('style');
+    st.id='ai-spin-style';
+    st.textContent='@keyframes ai-spin{to{transform:rotate(360deg)}}';
+    document.head.appendChild(st);
+  }
   document.getElementById('chatFlow').appendChild(card);
   document.getElementById('chatFlow').scrollTop=document.getElementById('chatFlow').scrollHeight;
-
-  // 调用后端多智能体分析
-  const params={
-    platform:conv.platform,
-    lang:conv.customer.code,
-    message:customerMsg.text,
-    conv_id:conv.id,
-    history:(chatHistories[conv.id]||[]).slice(-6).map(m=>({role:m.type==='customer'?'user':'assistant',content:m.text}))
-  };
-
-  // 30秒超时控制：DeepSeek等云API+RAG检索+Agent协作链路需要较长时间
-  const TIMEOUT_MS=60000;
-  let timeoutHandle;
-  const timeoutPromise=new Promise((_,reject)=>{
-    timeoutHandle=setTimeout(()=>reject(new Error('AI_ANALYSIS_TIMEOUT')),TIMEOUT_MS);
-  });
-
-  try{
-    const r=await Promise.race([API.chat(params),timeoutPromise]);
-    clearTimeout(timeoutHandle);
-    console.log('[AI建议] API返回:', r);
-    // 确保 r 有基本字段
-    if(!r||(!r.reply&&!r.reply_zh)){
-      console.warn('[AI建议] 返回数据为空，使用离线建议');
-      const offline=genOfflineSuggestion(conv,customerMsg);
-      renderSuggestionCard(cardId,conv,offline,customerMsg);
-      return;
-    }
-    // 渲染建议卡片
-    renderSuggestionCard(cardId,conv,r,customerMsg);
-  }catch(e){
-    clearTimeout(timeoutHandle);
-    const errCard=document.getElementById(cardId);
-    if(!errCard)return; // 卡片已被用户手动关闭
-    // 离线模式：本地生成建议内容（无LLM API时也能展示AI建议）
-    const offlineResult=genOfflineSuggestion(conv,customerMsg);
-    if(offlineResult){
-      renderSuggestionCard(cardId,conv,offlineResult,customerMsg);
-      return;
-    }
-    let errMsg='',errTip='';
-    if(e&&e.message==='AI_ANALYSIS_TIMEOUT'){
-      errMsg='AI分析超时，请手动回复或重试';
-      errTip='后端响应超过 '+(TIMEOUT_MS/1000)+' 秒未返回，可能网络异常或服务繁忙';
-    }else if(e&&e.message){
-      errMsg='AI分析失败：'+e.message;
-      errTip='请检查后端服务状态，或直接手动回复客户';
-    }else{
-      errMsg='AI分析失败，请手动回复';
-      errTip='未知错误，建议重试或检查网络连接';
-    }
-    errCard.querySelector('.ai-card-body').innerHTML=`
-      <div class="ai-card-error">
-        <div class="err-msg">${escapeHtml(errMsg)}</div>
-        <div class="err-tip">${escapeHtml(errTip)}</div>
-        <div class="err-actions">
-          <button class="action-btn retry" onclick="retryAISuggestion('${cardId}','${conv.id}')">重试</button>
-          <button class="action-btn reject" onclick="this.closest('.ai-suggestion-card').remove()">关闭</button>
-        </div>
-      </div>
-    `;
-    errCard.classList.remove('loading');
-    errCard.classList.add('error');
+  // 800ms后立即显示本地生成的建议（用户无需等待API）
+  setTimeout(()=>{
+    renderSuggestionCard(cardId,conv,offlineResult,customerMsg);
+  },800);
+  // 在线模式：后台异步调用API，返回后更新卡片
+  if(window.AppConfig.online){
+    const params={
+      platform:conv.platform,
+      lang:conv.customer.code,
+      message:customerMsg.text,
+      conv_id:conv.id,
+      history:(chatHistories[conv.id]||[]).slice(-6).map(m=>({role:m.type==='customer'?'user':'assistant',content:m.text}))
+    };
+    API.chat(params).then(r=>{
+      if(r&&(r.reply||r.reply_zh)){
+        console.log('[AI建议] API返回，更新卡片');
+        const liveCard=document.getElementById(cardId);
+        if(liveCard)renderSuggestionCard(cardId,conv,r,customerMsg);
+      }
+    }).catch(e=>{console.log('[AI建议] API失败，保留本地建议:',e)});
   }
+
 }
 
 // 重试AI建议：移除原错误卡片并重新触发分析（仅由错误卡片按钮调用）
@@ -1284,8 +1195,21 @@ function showToast(msg){
 }
 
 /* ============ 初始化 ============ */
+// 为所有平台预生成未读消息数（用于平台切换红点显示）
+window._platformUnread={};
+function initPlatformUnread(){
+  const platforms=['amazon','aliexpress','ebay','shopify','rakuten','email'];
+  platforms.forEach(pf=>{
+    // 每个平台生成随机未读数（3-25条），体现多平台多流量场景
+    window._platformUnread[pf]=Math.floor(Math.random()*23)+3;
+  });
+  // 当前平台未读数从实际会话中统计
+  const currentUnread=state.conversations.reduce((s,c)=>s+(c.unread||0),0);
+  window._platformUnread[state.platform]=currentUnread;
+}
 (async function init(){
   state.conversations=genConversations(state.platform);
+  initPlatformUnread();
   await updateMode();
   refreshStats(state.platform);
   renderConvList();
