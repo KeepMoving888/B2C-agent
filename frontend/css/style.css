@@ -158,7 +158,7 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none}
 .typing-text{font-size:11px;color:#94a3b8;font-style:italic}
 
 /* AI建议卡片 */
-.ai-suggestion-card{background:#fafaff;border:1.5px solid #c7d2fe;border-radius:12px;margin:10px 0;overflow:hidden;box-shadow:0 2px 8px rgba(99,102,241,.1)}
+.ai-suggestion-card{background:#fafaff;border:1.5px solid #c7d2fe;border-radius:12px;margin:10px 0;overflow:visible;box-shadow:0 2px 8px rgba(99,102,241,.1);position:relative;z-index:5}
 .ai-suggestion-card.loading{border-color:#c7d2fe;background:#fafaff}
 .ai-suggestion-card.error{border-color:#fca5a5;background:#fef2f2}
 .ai-card-header{display:flex;align-items:center;gap:6px;padding:10px 14px;background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(139,92,246,.08));border-bottom:1px solid #e0e7ff}
@@ -178,7 +178,7 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none}
 .suggestion-text{font-size:13px;color:#1e293b;line-height:1.5;padding:6px 8px;background:#f8fafc;border-radius:6px;border-left:3px solid #6366f1}
 .suggestion-text.muted{color:#64748b;border-left-color:#cbd5e1}
 .ai-card-actions{display:flex;gap:8px}
-.action-btn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid;transition:.15s}
+.action-btn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid;transition:.15s;position:relative;z-index:10;pointer-events:auto}
 .action-btn.adopt{background:#ecfdf5;color:#059669;border-color:#a7f3d0}
 .action-btn.adopt:hover{background:#d1fae5;box-shadow:0 2px 6px rgba(5,150,105,.2)}
 .action-btn.edit{background:#fffbeb;color:#d97706;border-color:#fde68a}

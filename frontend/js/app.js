@@ -756,6 +756,8 @@ async function triggerAISuggestion(conv,customerMsg){
   // 800ms后立即显示本地生成的建议（用户无需等待API）
   setTimeout(()=>{
     renderSuggestionCard(cardId,conv,offlineResult,customerMsg);
+    // 自动填入输入框：用户点击"AI分析建议"后建议内容直接进入输入框，无需再点采纳
+    autoFillSuggestion(offlineResult,conv);
   },800);
   // 在线模式：后台异步调用API，返回后更新卡片
   if(window.AppConfig.online){
@@ -771,6 +773,8 @@ async function triggerAISuggestion(conv,customerMsg){
         console.log('[AI建议] API返回，更新卡片');
         const liveCard=document.getElementById(cardId);
         if(liveCard)renderSuggestionCard(cardId,conv,r,customerMsg);
+        // API返回更优结果时同步更新输入框
+        autoFillSuggestion(r,conv);
       }
     }).catch(e=>{console.log('[AI建议] API失败，保留本地建议:',e)});
   }
@@ -899,6 +903,20 @@ function renderSuggestionCard(cardId,conv,r,customerMsg){
       </details>
     </div>
   `;
+}
+
+// 自动填入AI建议到输入框（点击AI分析建议后自动触发，无需手动点采纳）
+function autoFillSuggestion(result,conv){
+  try{
+    const input=document.getElementById('msgInput');
+    if(!input||!result)return;
+    // 优先用中文建议（避免翻译混杂），与 adoptSuggestion 逻辑一致
+    const text=result.reply_zh||result.reply||result.text||'';
+    if(!text)return;
+    input.value=text;
+    autoGrow(input);
+    showToast('AI建议已填入输入框，请审核后发送');
+  }catch(e){console.log('[AI建议] 自动填入失败:',e)}
 }
 
 // 采纳：填入输入框，人工确认后发送
