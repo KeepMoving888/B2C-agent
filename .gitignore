@@ -1,46 +1,44 @@
 # Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
 venv/
 env/
+.env
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
-
-# Environment variables
-.env
-.env.local
-.env.*.local
-
-# Logs
-*.log
-app.log
-
-# Data
-/data/
-
-# Build
-/build/
-/dist/
-*.egg-info/
-
-# Docker
-/docker-compose.override.yml
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Test
-.pytest_cache/
-.tox/
+# 日志
+*.log
+logs/
 
-# Coverage
-coverage.xml
-.coverage
+# 模型权重（不纳入版本管理）
+*.bin
+*.safetensors
+*.gguf
+*.pt
+*.pth
+training/outputs/
+training/checkpoints/
+deployment/vllm/models/
+
+# Milvus 数据
+deployment/milvus/volumes/
+
+# 构建产物
+frontend/dist/

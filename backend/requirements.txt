@@ -1,0 +1,54 @@
+# Web 框架
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+python-dotenv==1.0.0
+
+# 多智能体编排
+langgraph==0.0.40
+langchain==0.1.0
+langchain-core==0.1.10
+langchain-community==0.0.16
+langchain-openai==0.0.5
+
+# RAG 检索增强
+pymilvus==2.3.6
+sentence-transformers==2.3.1
+rank-bm25==0.2.2
+
+# 模型推理（vLLM OpenAI 兼容客户端）
+openai==1.12.0
+
+# 工具库
+numpy==1.26.3
+httpx==0.26.0
+loguru==0.7.2
+orjson==3.9.13
+
+# ===== 企业级基础设施（技术栈对齐） =====
+# 多平台消息接入层
+kafka-python>=2.0.2
+# Elasticsearch 混合检索（BM25 稀疏检索）
+elasticsearch>=8.11.0
+# PostgreSQL 业务数据持久化
+asyncpg>=0.29.0
+SQLAlchemy>=2.0.23
+# Redis 缓存与会话状态
+redis>=5.0.1
+# Celery 异步任务队列
+celery>=5.3.6
+# Jaeger 全链路追踪
+opentelemetry-api>=1.21.0
+opentelemetry-sdk>=1.21.0
+opentelemetry-exporter-jaeger>=1.21.0
+opentelemetry-instrumentation-fastapi>=0.42b0
+# Prometheus 客户端（可选，当前自实现 exposition format）
+# prometheus-client>=0.19.0
+# 模型微调与偏好对齐
+peft>=0.7.0          # QLoRA 4bit 适配器
+trl>=0.7.4           # DPO 偏好对齐训练
+datasets>=2.16.0
+accelerate>=0.25.0
+bitsandbytes>=0.41.3 # 4bit 量化
+autoawq>=0.1.7       # AWQ 4bit 量化

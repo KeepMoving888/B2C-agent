@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>多语言多平台智能客服系统</title>
+<link rel="stylesheet" href="css/style.css?v=20260722f5">
+</head>
+<body>
+  <!-- Top Nav -->
+  <div class="topbar">
+    <div class="logo"><div class="mark">客</div>多语言多平台智能客服系统</div>
+    <div class="platform-tabs" id="platformTabs">
+      <div class="tab active" data-pf="amazon">Amazon<span class="pf-unread" id="unread-amazon" style="display:none">0</span></div>
+      <div class="tab" data-pf="aliexpress">速卖通<span class="pf-unread" id="unread-aliexpress" style="display:none">0</span></div>
+      <div class="tab" data-pf="ebay">eBay<span class="pf-unread" id="unread-ebay" style="display:none">0</span></div>
+      <div class="tab" data-pf="shopify">独立站<span class="pf-unread" id="unread-shopify" style="display:none">0</span></div>
+      <div class="tab" data-pf="rakuten">乐天<span class="pf-unread" id="unread-rakuten" style="display:none">0</span></div>
+      <div class="tab" data-pf="email">邮件<span class="pf-unread" id="unread-email" style="display:none">0</span></div>
+    </div>
+    <div class="spacer"></div>
+    <div class="mode-switch" id="modeSwitch" title="切换推理后端">
+      <span class="mode-dot" id="modeDot"></span><span id="modeLabel">连接中</span>
+    </div>
+    <div class="auto-reply-switch inactive" id="autoReplySwitch" title="开启后Agent将自动处理客户消息，需要人工时自动通知">
+      <span class="auto-reply-label">Agent自动回复</span>
+      <div class="auto-reply-toggle"></div>
+    </div>
+    <div class="concurrency-badge">⚡ 高并发架构</div>
+    <div class="online-status"><div class="dot"></div>客服在线 · 接待中</div>
+    <div class="user-chip"><div class="av">贺</div><div class="nm">贺哲华</div></div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="statsbar" id="statsBar">
+    <div class="stat"><div class="lbl">今日会话数</div><div class="val" id="stConv">—<span class="u">个</span></div><div class="delta up" id="stConvD">—</div></div>
+    <div class="stat"><div class="lbl">平均响应时间</div><div class="val" id="stResp">—<span class="u">秒</span></div><div class="delta up" id="stRespD">—</div></div>
+    <div class="stat"><div class="lbl">客户满意度</div><div class="val" id="stSat">—<span class="u">%</span></div><div class="delta up" id="stSatD">—</div></div>
+    <div class="stat"><div class="lbl">AI处理占比</div><div class="val" id="stAi">—<span class="u">%</span></div><div class="delta up" id="stAiD">—</div></div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Left -->
+    <div class="pane">
+      <div class="conv-head">
+        <h3>会话列表</h3>
+        <div class="cnt" id="convCnt">0 在线</div>
+      </div>
+      <div class="conv-search"><span class="ic">Q</span><input id="convSearch" placeholder="搜索客户或消息..."></div>
+      <div class="conv-list" id="convList"></div>
+    </div>
+
+    <!-- Middle -->
+    <div class="pane" style="background:linear-gradient(180deg,#f8fafc,#f1f5f9)">
+      <div class="chat-head" id="chatHead"></div>
+      <div class="chat-flow" id="chatFlow"></div>
+      <div class="composer">
+        <div class="suggest-row" id="suggestRow"></div>
+        <div class="input-row">
+          <textarea id="msgInput" rows="1" placeholder="输入消息，支持多语言实时翻译发送..."></textarea>
+          <button class="ai-suggest-btn" id="aiSuggestBtn" title="基于最后一条客户消息，AI分析意图并生成建议回复">✦ AI分析建议</button>
+          <button class="send-btn" id="sendBtn">➤</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right -->
+    <div class="pane detail" id="detailPane"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/config.js?v=20260722f5"></script>
+  <script src="js/api.js?v=20260722f5"></script>
+  <script src="js/datagen.js?v=20260722f5"></script>
+  <script src="js/app.js?v=20260722f5"></script>
+</body>
+</html>

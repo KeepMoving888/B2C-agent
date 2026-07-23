@@ -1,0 +1,446 @@
+:root{
+  --blue:#2563eb;--blue-d:#1d4ed8;--blue-l:#eff6ff;--bg:#f1f5f9;--card:#ffffff;
+  --border:#e2e8f0;--text:#0f172a;--muted:#64748b;--green:#16a34a;--amber:#f59e0b;--red:#ef4444;
+  --radius:12px;--shadow:0 1px 3px rgba(15,23,42,.08),0 1px 2px rgba(15,23,42,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);font-size:14px;height:100vh;overflow:hidden}
+button{cursor:pointer;font-family:inherit;border:none;outline:none}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ===== Top Nav ===== */
+.topbar{height:56px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:18px;position:relative;z-index:30}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;white-space:nowrap}
+.logo .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#2563eb,#3b82f6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+.platform-tabs{display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:10px}
+.platform-tabs .tab{padding:6px 14px;border-radius:8px;font-size:13px;color:var(--muted);font-weight:500;transition:.18s}
+.platform-tabs .tab.active{background:#fff;color:var(--blue);box-shadow:var(--shadow);font-weight:600}
+.topbar .spacer{flex:1}
+.mode-switch{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);background:var(--bg);padding:5px 10px;border-radius:20px;cursor:pointer;transition:.15s}
+.mode-switch:hover{background:#e2e8f0}
+.mode-dot{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 3px rgba(245,158,11,.18);transition:.2s}
+.mode-dot.online{background:var(--green);box-shadow:0 0 0 3px rgba(22,163,74,.18)}
+.mode-dot.offline{background:var(--muted);box-shadow:0 0 0 3px rgba(100,116,139,.18)}
+.online-status{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);background:var(--bg);padding:5px 10px;border-radius:20px}
+.online-status .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(22,163,74,.18)}
+.user-chip{display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:24px;background:var(--bg);cursor:pointer}
+.user-chip .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#06b6d4);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600}
+.user-chip .nm{font-size:13px;font-weight:600}
+
+/* ===== Stats Bar ===== */
+.statsbar{height:64px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px}
+.stat{flex:1;display:flex;flex-direction:column;gap:2px;padding:0 14px;border-left:2px solid var(--border)}
+.stat:first-child{border-left:none}
+.stat .lbl{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.stat .val{font-size:20px;font-weight:700;letter-spacing:-.5px}
+.stat .val .u{font-size:12px;font-weight:500;color:var(--muted);margin-left:2px}
+.stat .delta{font-size:11px;font-weight:600}
+.stat .delta.up{color:var(--green)}
+.stat .delta.down{color:var(--red)}
+
+/* ===== Layout ===== */
+.main{display:grid;grid-template-columns:300px 1fr 320px;height:calc(100vh - 56px - 64px)}
+.pane{background:var(--card);overflow:hidden;display:flex;flex-direction:column}
+.pane+.pane{border-left:1px solid var(--border)}
+
+/* ===== Left: Conversations ===== */
+.conv-head{padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between}
+.conv-head h3{font-size:14px;font-weight:700}
+.conv-head .cnt{font-size:11px;color:var(--muted);background:var(--bg);padding:3px 8px;border-radius:10px}
+.conv-search{margin:0 16px 8px;position:relative}
+.conv-search input{width:100%;padding:8px 10px 8px 30px;border:1px solid var(--border);border-radius:10px;font-size:12px;background:var(--bg)}
+.conv-search .ic{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px}
+.conv-list{flex:1;overflow-y:auto;padding:4px 8px 12px}
+.conv-item{display:flex;gap:10px;padding:10px;border-radius:var(--radius);cursor:pointer;transition:.15s;margin-bottom:2px;position:relative}
+.conv-item:hover{background:var(--bg)}
+.conv-item.active{background:var(--blue-l)}
+.conv-item.active::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:3px;background:var(--blue);border-radius:0 3px 3px 0}
+.conv-item .av{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:600;position:relative}
+.conv-item .pf{position:absolute;bottom:-2px;right:-2px;width:16px;height:16px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;border:1.5px solid #fff}
+.conv-item .body{flex:1;min-width:0}
+.conv-item .top{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.conv-item .nm{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conv-item .tm{font-size:10px;color:var(--muted);flex-shrink:0}
+.conv-item .pre{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.conv-item .badge{position:absolute;top:8px;right:10px;min-width:18px;height:18px;background:var(--blue);color:#fff;font-size:10px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:600;padding:0 5px}
+.conv-item .agent-tag{position:absolute;bottom:8px;right:10px;font-size:9px;font-weight:700;padding:1px 6px;border-radius:5px}
+.conv-item .agent-tag.ai{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff}
+.conv-item .agent-tag.human{background:#fef3c7;color:#b45309}
+
+/* ===== Middle: Chat ===== */
+.chat-head{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.chat-head .av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:13px}
+.chat-head .info{flex:1}
+.chat-head .info .nm{font-size:14px;font-weight:700}
+.chat-head .info .sub{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-top:2px}
+.lang-tag{font-size:10px;background:var(--blue-l);color:var(--blue);padding:2px 7px;border-radius:6px;font-weight:600}
+.chat-head .acts{display:flex;gap:6px}
+.icon-btn{width:34px;height:34px;border-radius:9px;background:var(--bg);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;transition:.15s}
+.icon-btn:hover{background:var(--blue-l);color:var(--blue)}
+
+.chat-flow{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px;background:linear-gradient(180deg,#f8fafc,#f1f5f9)}
+.msg{display:flex;gap:10px;max-width:78%;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.msg.customer{align-self:flex-start}
+.msg.agent{align-self:flex-end;flex-direction:row-reverse}
+.msg .av{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:600}
+.msg.agent .av{background:linear-gradient(135deg,#2563eb,#06b6d4)}
+.bubble{padding:10px 13px;border-radius:14px;font-size:13px;line-height:1.55;position:relative}
+.msg.customer .bubble{background:#fff;border:1px solid var(--border);border-bottom-left-radius:4px}
+.msg.agent .bubble{background:var(--blue);color:#fff;border-bottom-right-radius:4px}
+.bubble .tm{font-size:10px;opacity:.6;margin-top:4px;display:block}
+.trans-box{margin-top:6px;padding-top:6px;border-top:1px dashed rgba(100,116,139,.25);font-size:12px}
+.msg.customer .trans-box{color:#475569}
+.msg.agent .trans-box{color:rgba(255,255,255,.92)}
+.trans-content{line-height:1.5}
+.msg.agent .trans-content{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+.trans-toggle{font-size:10px;color:var(--blue);cursor:pointer;font-weight:600;user-select:none}
+.msg.agent .trans-toggle{color:#bae6fd}
+.ai-flag{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:2px 6px;border-radius:6px;margin-bottom:5px}
+.agent-route{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;background:#dbeafe;color:#1d4ed8;padding:2px 6px;border-radius:6px;margin-bottom:5px;margin-left:4px}
+
+/* 协作链路徽章 */
+.chain-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;background:#f0f9ff;color:#0369a1;padding:3px 8px;border-radius:10px;margin-bottom:5px;border:1px solid #bae6fd}
+.chain-badge.multi{background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;border-color:#fbbf24}
+.chain-badge .chain-icon{font-size:11px}
+
+/* 转交原因标签 */
+.handoff-tag{display:inline-flex;font-size:9px;font-weight:600;background:#fee2e2;color:#991b1b;padding:2px 6px;border-radius:6px;margin-bottom:5px;margin-left:4px;border:1px solid #fca5a5}
+
+/* Trace 可视化面板 */
+.collab-trace-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}
+.collab-trace-section h4{font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.collab-chain{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.trace-node{display:flex;align-items:center;gap:6px;padding:4px 10px;background:#f8fafc;border-radius:8px;border:1px solid var(--border)}
+.trace-node.final{background:#eff6ff;border-color:#93c5fd}
+.trace-dot{width:20px;height:20px;border-radius:50%;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.trace-name{font-size:11px;font-weight:600;color:var(--text)}
+.trace-arrow{color:var(--muted);font-size:14px;font-weight:700}
+.collab-meta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.collab-meta .meta-item{font-size:11px;color:var(--muted);background:var(--bg);padding:3px 8px;border-radius:6px}
+.trace-details{margin-top:8px}
+.trace-details summary{cursor:pointer;font-size:11px;font-weight:600;color:var(--blue);padding:4px 0;user-select:none}
+.trace-details summary:hover{color:var(--blue-d)}
+.trace-steps{margin-top:8px;display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto;padding-right:4px}
+.trace-step{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;background:#f8fafc;border-radius:6px;border-left:3px solid var(--border)}
+.trace-step-icon{font-size:14px;font-weight:700;flex-shrink:0;width:18px;text-align:center;line-height:1.4}
+.trace-step-body{flex:1;min-width:0}
+.trace-step-head{font-size:11px;color:var(--text);line-height:1.4}
+.trace-step-agent{font-weight:700;color:var(--blue)}
+.trace-reason{display:inline-block;font-size:10px;color:#92400e;background:#fef3c7;padding:1px 5px;border-radius:4px;margin-left:4px}
+.trace-detail{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.3}
+.day-divider{align-self:center;font-size:11px;color:var(--muted);background:#e2e8f0;padding:3px 12px;border-radius:10px;margin:4px 0}
+.typing{display:flex;gap:4px;padding:8px 12px;background:#fff;border:1px solid var(--border);border-radius:14px;border-bottom-left-radius:4px;align-self:flex-start}
+.typing span{width:6px;height:6px;background:#cbd5e1;border-radius:50%;animation:blink 1.4s infinite both}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+
+.composer{padding:12px 16px;border-top:1px solid var(--border);background:var(--card)}
+.suggest-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.suggest-chip{padding:6px 12px;background:var(--blue-l);border:1px solid #dbeafe;border-radius:20px;font-size:12px;color:var(--blue);font-weight:500;transition:.15s}
+.suggest-chip:hover{background:var(--blue);color:#fff}
+.ai-suggest-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border-radius:20px;font-size:12px;font-weight:600;transition:.15s}
+.ai-suggest-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(99,102,241,.35)}
+.cust-reply-btn{display:inline-flex;align-items:center;gap:4px;padding:6px 10px;background:#f0f9ff;color:#0369a1;border:1px solid #bae6fd;border-radius:20px;font-size:11px;font-weight:600;transition:.15s;white-space:nowrap}
+.cust-reply-btn:hover{background:#e0f2fe;transform:translateY(-1px);box-shadow:0 3px 8px rgba(3,105,161,.2)}
+
+/* 客户正在输入提示 */
+.typing-indicator{display:flex;align-items:center;gap:8px;padding:8px 14px;margin:6px 0}
+.typing-indicator .av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600;flex-shrink:0}
+.typing-dots{display:flex;gap:3px;align-items:center}
+.typing-dots span{width:6px;height:6px;border-radius:50%;background:#94a3b8;animation:typingBounce 1.4s infinite ease-in-out}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
+.typing-text{font-size:11px;color:#94a3b8;font-style:italic}
+
+/* AI建议卡片 */
+.ai-suggestion-card{background:#fafaff;border:1.5px solid #c7d2fe;border-radius:12px;margin:10px 0;overflow:hidden;box-shadow:0 2px 8px rgba(99,102,241,.1)}
+.ai-suggestion-card.loading{border-color:#c7d2fe;background:#fafaff}
+.ai-suggestion-card.error{border-color:#fca5a5;background:#fef2f2}
+.ai-card-header{display:flex;align-items:center;gap:6px;padding:10px 14px;background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(139,92,246,.08));border-bottom:1px solid #e0e7ff}
+.ai-card-icon{font-size:14px;color:#6366f1}
+.ai-card-title{font-size:13px;font-weight:700;color:#4f46e5;flex:1}
+.ai-card-close{cursor:pointer;color:#94a3b8;font-size:14px;padding:2px 6px;border-radius:4px;transition:.15s}
+.ai-card-close:hover{color:#ef4444;background:#fef2f2}
+.ai-card-body{padding:12px 14px}
+.ai-card-loading{color:#6366f1;font-size:12px;padding:8px 0;animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+.ai-card-error{color:#dc2626;font-size:12px;padding:8px 0}
+.ai-card-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.ai-card-meta .meta-tag{font-size:10px;color:#475569;background:#f1f5f9;padding:3px 8px;border-radius:6px;border:1px solid #e2e8f0}
+.ai-card-meta .meta-tag.chain{background:#fef3c7;color:#92400e;border-color:#fde68a}
+.ai-card-suggestion{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:10px;margin-bottom:10px}
+.suggestion-label{font-size:11px;font-weight:600;color:#64748b;margin-bottom:4px}
+.suggestion-text{font-size:13px;color:#1e293b;line-height:1.5;padding:6px 8px;background:#f8fafc;border-radius:6px;border-left:3px solid #6366f1}
+.suggestion-text.muted{color:#64748b;border-left-color:#cbd5e1}
+.ai-card-actions{display:flex;gap:8px}
+.action-btn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid;transition:.15s}
+.action-btn.adopt{background:#ecfdf5;color:#059669;border-color:#a7f3d0}
+.action-btn.adopt:hover{background:#d1fae5;box-shadow:0 2px 6px rgba(5,150,105,.2)}
+.action-btn.edit{background:#fffbeb;color:#d97706;border-color:#fde68a}
+.action-btn.edit:hover{background:#fef3c7;box-shadow:0 2px 6px rgba(217,119,6,.2)}
+.action-btn.reject{background:#fef2f2;color:#dc2626;border-color:#fca5a5}
+.action-btn.reject:hover{background:#fee2e2;box-shadow:0 2px 6px rgba(220,38,38,.2)}
+.ai-card-trace{margin-top:8px}
+.ai-card-trace summary{cursor:pointer;font-size:11px;color:#6366f1;padding:4px 0;user-select:none}
+.ai-card-trace summary:hover{text-decoration:underline}
+.trace-mini{margin-top:6px;display:flex;flex-direction:column;gap:3px;max-height:180px;overflow-y:auto}
+.trace-mini-step{font-size:11px;color:#475569;padding:3px 6px;background:#f8fafc;border-radius:4px;display:flex;gap:4px;align-items:center}
+.trace-mini-icon{font-weight:700;flex-shrink:0}
+.sentiment-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px}
+.sentiment-tag.ok{background:#dcfce7;color:#15803d}
+.sentiment-tag.warning{background:#fef3c7;color:#92400e}
+.sentiment-tag.danger{background:#fee2e2;color:#991b1b}
+/* 置信度标签 */
+.conf-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px}
+.conf-tag.high{background:#dbeafe;color:#1e40af}
+.conf-tag.mid{background:#fef3c7;color:#92400e}
+.conf-tag.low{background:#fee2e2;color:#991b1b}
+/* 反幻觉标签 */
+.antihall-tag{font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px}
+.antihall-tag.pass{background:#dcfce7;color:#15803d}
+.antihall-tag.warn{background:#fef3c7;color:#92400e}
+/* 转交原因标签 */
+.ai-card-meta .meta-tag.warn{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
+/* 协作链路可视化 */
+.ai-card-chain{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:10px;padding:6px 10px;background:linear-gradient(90deg,rgba(99,102,241,.05),rgba(6,182,212,.05));border-radius:8px;border:1px solid #e0e7ff}
+.ai-card-chain .chain-node{font-size:11px;font-weight:600;padding:3px 10px;border-radius:6px;background:#fff;color:#4f46e5;border:1px solid #c7d2fe}
+.ai-card-chain .chain-node.final{background:linear-gradient(135deg,#2563eb,#06b6d4);color:#fff;border-color:transparent}
+.ai-card-chain .chain-sep{font-size:11px;color:#94a3b8;font-weight:700}
+/* RAG引用来源 */
+.ai-card-rag{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px;margin-bottom:10px}
+.ai-card-rag .rag-label{font-size:11px;font-weight:700;color:#15803d;margin-bottom:8px;display:flex;align-items:center;gap:4px}
+.ai-card-rag .rag-sources{display:flex;flex-direction:column;gap:6px}
+.ai-card-rag .rag-source-item{background:#fff;border:1px solid #d1fae5;border-radius:6px;padding:6px 8px}
+.ai-card-rag .rag-source-head{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.ai-card-rag .rag-source-id{font-size:10px;font-weight:700;color:#0369a1;font-family:monospace}
+.ai-card-rag .rag-source-cat{font-size:10px;color:#64748b;background:#f1f5f9;padding:1px 6px;border-radius:4px}
+.ai-card-rag .rag-source-score{font-size:10px;font-weight:700;margin-left:auto}
+.ai-card-rag .rag-source-content{font-size:11px;color:#475569;line-height:1.4;max-height:40px;overflow:hidden}
+.input-row{display:flex;gap:10px;align-items:flex-end;background:var(--bg);border-radius:14px;padding:8px 8px 8px 14px;border:1px solid var(--border)}
+.input-row textarea{flex:1;border:none;background:transparent;resize:none;font-size:13px;line-height:1.5;outline:none;max-height:90px;font-family:inherit}
+.send-btn{width:38px;height:38px;border-radius:10px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;transition:.15s;flex-shrink:0}
+.send-btn:hover{background:var(--blue-d);transform:scale(1.05)}
+
+/* ===== Right: Detail ===== */
+.detail{overflow-y:auto}
+.detail section{padding:16px 18px;border-bottom:1px solid var(--border)}
+.detail section h4{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.cust-card{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+.cust-card .av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:600}
+.cust-card .nm{font-size:15px;font-weight:700}
+.cust-card .ct{font-size:12px;color:var(--muted);margin-top:2px}
+.level-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-top:4px}
+.lvl-gold{background:#fef3c7;color:#b45309}
+.lvl-plat{background:#e0e7ff;color:#4338ca}
+.lvl-diamond{background:#cffafe;color:#0e7490}
+.lvl-silver{background:#f1f5f9;color:#475569}
+.cust-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cust-grid .it{background:var(--bg);border-radius:10px;padding:10px}
+.cust-grid .it .l{font-size:10px;color:var(--muted)}
+.cust-grid .it .v{font-size:15px;font-weight:700;margin-top:3px}
+
+.sentiment{display:flex;flex-direction:column;gap:10px}
+.sen-row{display:flex;align-items:center;gap:10px}
+.sen-row .lab{width:52px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px}
+.sen-bar{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden}
+.sen-bar .fill{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.sen-row .pct{width:38px;text-align:right;font-size:12px;font-weight:700}
+.gauge-wrap{display:flex;align-items:center;justify-content:center;margin:6px 0 4px;position:relative}
+.gauge{transform:rotate(-90deg)}
+.gauge-txt{position:absolute;text-align:center}
+.gauge-txt .big{font-size:22px;font-weight:800}
+.gauge-txt .sm{font-size:10px;color:var(--muted)}
+
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:11px;padding:4px 10px;border-radius:8px;background:var(--blue-l);color:var(--blue);font-weight:500;border:1px solid #dbeafe}
+.tag.warn{background:#fef3c7;color:#b45309;border-color:#fde68a}
+.tag.ok{background:#dcfce7;color:#15803d;border-color:#bbf7d0}
+
+.tpl-list{display:flex;flex-direction:column;gap:6px}
+.tpl{padding:9px 11px;background:var(--bg);border-radius:9px;font-size:12px;cursor:pointer;transition:.15s;border:1px solid transparent;line-height:1.4}
+.tpl:hover{background:var(--blue-l);border-color:#dbeafe}
+
+.order-item{background:var(--bg);border-radius:10px;padding:10px;margin-bottom:8px}
+.order-item .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.order-item .oid{font-size:12px;font-weight:700}
+.order-item .ost{font-size:10px;padding:2px 7px;border-radius:5px;font-weight:600}
+.ost.shipped{background:#dbeafe;color:#1d4ed8}
+.ost.paid{background:#dcfce7;color:#15803d}
+.ost.pending{background:#fef3c7;color:#b45309}
+.ost.refund{background:#fee2e2;color:#b91c1c}
+.order-item .pd{font-size:11px;color:var(--muted)}
+.order-item .amt{font-size:13px;font-weight:700;margin-top:4px}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#0f172a;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;opacity:0;transition:.3s;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ===== 前端深度改造：多Agent路由可视化 ===== */
+
+/* 会话列表：阶段标签 + Agent标签 */
+.conv-tags{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.stage-tag{font-size:10px;padding:1px 6px;border-radius:4px;font-weight:600;white-space:nowrap}
+.agent-route-tag{font-size:10px;padding:1px 6px;border-radius:4px;font-weight:500;white-space:nowrap}
+
+/* 聊天消息：Agent标识徽章 */
+.agent-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 8px;border-radius:10px;margin-bottom:4px;font-weight:600}
+.agent-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+
+/* 右侧详情：Agent路由卡片 */
+.agent-route-section{margin-bottom:12px}
+.agent-route-card{background:#f8fafc;border-radius:8px;padding:12px;margin-top:8px}
+.route-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.route-stage{font-size:11px;padding:2px 8px;border-radius:4px;font-weight:600}
+.route-agent{font-size:13px;font-weight:700}
+.route-chain{display:flex;align-items:center;gap:8px;margin:10px 0}
+.route-node{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 12px;border:2px solid #e2e8f0;border-radius:8px;background:#fff;min-width:80px}
+.route-node.active{background:#eff6ff}
+.route-node-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700}
+.route-node-name{font-size:10px;color:#475569;font-weight:600}
+.route-meta{display:flex;gap:12px;font-size:10px;color:#64748b;margin-top:8px;flex-wrap:wrap}
+.route-meta span{background:#f1f5f9;padding:2px 6px;border-radius:4px}
+
+/* 协作链路徽章（聊天消息内） */
+.chain-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 8px;border-radius:8px;background:#f0f9ff;color:#0369a1;margin-bottom:4px}
+.chain-badge.multi{background:#fef3c7;color:#92400e}
+.chain-icon{font-size:10px}
+
+/* 转交原因标签 */
+.handoff-tag{font-size:10px;padding:1px 6px;border-radius:4px;background:#fee2e2;color:#dc2626;margin-left:4px}
+
+/* Agent路由标签（旧样式增强） */
+.agent-route{font-size:10px;padding:1px 6px;border-radius:4px;background:#e0e7ff;color:#4338ca;margin-left:4px}
+/* ===== Agent 路由可视化 v2（精致版） ===== */
+
+/* 会话列表：阶段标签 */
+.conv-tags{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+.stage-tag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;white-space:nowrap;letter-spacing:0.3px}
+.agent-route-tag{font-size:9px;padding:1px 7px;border-radius:10px;font-weight:500;white-space:nowrap;opacity:0.85}
+
+/* 聊天消息：Agent 徽章 */
+.agent-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;padding:3px 10px;border-radius:12px;margin-bottom:5px;font-weight:600;letter-spacing:0.3px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.agent-dot{width:6px;height:6px;border-radius:50%;display:inline-block;box-shadow:0 0 4px currentColor}
+
+/* 右侧详情：Agent 路由卡片（精致版） */
+.agent-route-section{margin-bottom:14px}
+.agent-route-card{background:linear-gradient(135deg,#f8fafc 0%,#f1f5f9 100%);border-radius:10px;padding:14px;margin-top:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);border:1px solid #e2e8f0}
+.route-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.route-stage{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600;letter-spacing:0.3px}
+.route-agent{font-size:14px;font-weight:700;letter-spacing:0.5px}
+.route-chain{display:flex;align-items:center;gap:10px;margin:12px 0;flex-wrap:wrap}
+.route-node{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 14px;border:2px solid #e2e8f0;border-radius:10px;background:#fff;min-width:90px;transition:all 0.2s ease}
+.route-node.active{background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%);box-shadow:0 2px 6px rgba(59,130,246,0.15)}
+.route-node-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;box-shadow:0 2px 4px rgba(0,0,0,0.15)}
+.route-node-name{font-size:10px;color:#475569;font-weight:600;white-space:nowrap}
+.route-meta{display:flex;gap:8px;font-size:10px;color:#64748b;margin-top:10px;flex-wrap:wrap}
+.route-meta span{background:#fff;padding:3px 8px;border-radius:6px;border:1px solid #e2e8f0;font-weight:500}
+
+/* 协作链路徽章 */
+.chain-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 8px;border-radius:8px;background:linear-gradient(135deg,#f0f9ff,#e0f2fe);color:#0369a1;margin-bottom:5px;border:1px solid #bae6fd}
+.chain-badge.multi{background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;border-color:#fcd34d}
+.chain-icon{font-size:10px}
+
+/* 转交原因标签 */
+.handoff-tag{font-size:10px;padding:2px 8px;border-radius:8px;background:linear-gradient(135deg,#fee2e2,#fecaca);color:#dc2626;margin-left:4px;border:1px solid #fca5a5;font-weight:600}
+
+/* Agent 路由标签 */
+.agent-route{font-size:10px;padding:2px 8px;border-radius:8px;background:linear-gradient(135deg,#e0e7ff,#c7d2fe);color:#4338ca;margin-left:4px;font-weight:600}
+
+/* ===== Agent 自动回复模式开关 ===== */
+.auto-reply-switch{display:flex;align-items:center;gap:8px;padding:6px 14px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;border-radius:20px;cursor:pointer;transition:all 0.3s ease;user-select:none}
+.auto-reply-switch.active{background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-color:#22c55e;box-shadow:0 0 12px rgba(34,197,94,0.3)}
+.auto-reply-switch.inactive{background:linear-gradient(135deg,#f8fafc,#f1f5f9);border-color:#cbd5e1}
+.auto-reply-label{font-size:12px;font-weight:600;color:#475569;white-space:nowrap}
+.auto-reply-switch.active .auto-reply-label{color:#15803d}
+.auto-reply-switch.inactive .auto-reply-label{color:#94a3b8}
+.auto-reply-toggle{width:36px;height:20px;background:#cbd5e1;border-radius:10px;position:relative;transition:all 0.3s ease}
+.auto-reply-switch.active .auto-reply-toggle{background:#22c55e}
+.auto-reply-toggle::after{content:'';width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:all 0.3s ease;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.auto-reply-switch.active .auto-reply-toggle::after{left:18px}
+
+/* 高并发架构标签 */
+.concurrency-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 8px;border-radius:8px;background:linear-gradient(135deg,#fff7ed,#ffedd5);color:#c2410c;border:1px solid #fed7aa;font-weight:600;margin-left:8px}
+
+/* 人工转接通知 */
+.handoff-notification{position:fixed;top:80px;right:20px;background:linear-gradient(135deg,#fef2f2,#fee2e2);border:2px solid #fca5a5;border-radius:12px;padding:14px 18px;box-shadow:0 8px 24px rgba(239,68,68,0.2);z-index:9999;max-width:320px;animation:slideIn 0.3s ease}
+@keyframes slideIn{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
+.handoff-notif-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.handoff-notif-icon{width:28px;height:28px;border-radius:50%;background:#ef4444;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700}
+.handoff-notif-title{font-size:13px;font-weight:700;color:#dc2626}
+.handoff-notif-body{font-size:12px;color:#7f1d1d;line-height:1.5}
+.handoff-notif-actions{display:flex;gap:8px;margin-top:10px}
+.handoff-notif-btn{font-size:11px;padding:5px 12px;border-radius:6px;cursor:pointer;font-weight:600;border:none}
+.handoff-notif-btn.accept{background:#ef4444;color:#fff}
+.handoff-notif-btn.dismiss{background:#fff;color:#64748b;border:1px solid #e2e8f0}
+/* ===== Agent 路由可视化 v2（精致版） ===== */
+
+/* 会话列表：阶段标签 */
+.conv-tags{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+.stage-tag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;white-space:nowrap;letter-spacing:0.3px}
+.agent-route-tag{font-size:9px;padding:1px 7px;border-radius:10px;font-weight:500;white-space:nowrap;opacity:0.85}
+
+/* 聊天消息：Agent 徽章 */
+.agent-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;padding:3px 10px;border-radius:12px;margin-bottom:5px;font-weight:600;letter-spacing:0.3px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.agent-dot{width:6px;height:6px;border-radius:50%;display:inline-block;box-shadow:0 0 4px currentColor}
+
+/* 右侧详情：Agent 路由卡片（精致版） */
+.agent-route-section{margin-bottom:14px}
+.agent-route-card{background:linear-gradient(135deg,#f8fafc 0%,#f1f5f9 100%);border-radius:10px;padding:14px;margin-top:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);border:1px solid #e2e8f0}
+.route-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.route-stage{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600;letter-spacing:0.3px}
+.route-agent{font-size:14px;font-weight:700;letter-spacing:0.5px}
+.route-chain{display:flex;align-items:center;gap:10px;margin:12px 0;flex-wrap:wrap}
+.route-node{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 14px;border:2px solid #e2e8f0;border-radius:10px;background:#fff;min-width:90px;transition:all 0.2s ease}
+.route-node.active{background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%);box-shadow:0 2px 6px rgba(59,130,246,0.15)}
+.route-node-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;box-shadow:0 2px 4px rgba(0,0,0,0.15)}
+.route-node-name{font-size:10px;color:#475569;font-weight:600;white-space:nowrap}
+.route-meta{display:flex;gap:8px;font-size:10px;color:#64748b;margin-top:10px;flex-wrap:wrap}
+.route-meta span{background:#fff;padding:3px 8px;border-radius:6px;border:1px solid #e2e8f0;font-weight:500}
+
+/* 协作链路徽章 */
+.chain-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 8px;border-radius:8px;background:linear-gradient(135deg,#f0f9ff,#e0f2fe);color:#0369a1;margin-bottom:5px;border:1px solid #bae6fd}
+.chain-badge.multi{background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;border-color:#fcd34d}
+.chain-icon{font-size:10px}
+
+/* 转交原因标签 */
+.handoff-tag{font-size:10px;padding:2px 8px;border-radius:8px;background:linear-gradient(135deg,#fee2e2,#fecaca);color:#dc2626;margin-left:4px;border:1px solid #fca5a5;font-weight:600}
+
+/* Agent 路由标签 */
+.agent-route{font-size:10px;padding:2px 8px;border-radius:8px;background:linear-gradient(135deg,#e0e7ff,#c7d2fe);color:#4338ca;margin-left:4px;font-weight:600}
+
+/* ===== Agent 自动回复模式开关 ===== */
+.auto-reply-switch{display:flex;align-items:center;gap:8px;padding:6px 14px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;border-radius:20px;cursor:pointer;transition:all 0.3s ease;user-select:none}
+.auto-reply-switch.active{background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-color:#22c55e;box-shadow:0 0 12px rgba(34,197,94,0.3)}
+.auto-reply-switch.inactive{background:linear-gradient(135deg,#f8fafc,#f1f5f9);border-color:#cbd5e1}
+.auto-reply-label{font-size:12px;font-weight:600;color:#475569;white-space:nowrap}
+.auto-reply-switch.active .auto-reply-label{color:#15803d}
+.auto-reply-switch.inactive .auto-reply-label{color:#94a3b8}
+.auto-reply-toggle{width:36px;height:20px;background:#cbd5e1;border-radius:10px;position:relative;transition:all 0.3s ease}
+.auto-reply-switch.active .auto-reply-toggle{background:#22c55e}
+.auto-reply-toggle::after{content:'';width:16px;height:16px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:all 0.3s ease;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+.auto-reply-switch.active .auto-reply-toggle::after{left:18px}
+
+/* 高并发架构标签 */
+.concurrency-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 8px;border-radius:8px;background:linear-gradient(135deg,#fff7ed,#ffedd5);color:#c2410c;border:1px solid #fed7aa;font-weight:600;margin-left:8px}
+
+/* 人工转接通知 */
+.handoff-notification{position:fixed;top:80px;right:20px;background:linear-gradient(135deg,#fef2f2,#fee2e2);border:2px solid #fca5a5;border-radius:12px;padding:14px 18px;box-shadow:0 8px 24px rgba(239,68,68,0.2);z-index:9999;max-width:320px;animation:slideIn 0.3s ease}
+@keyframes slideIn{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
+.handoff-notif-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.handoff-notif-icon{width:28px;height:28px;border-radius:50%;background:#ef4444;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700}
+.handoff-notif-title{font-size:13px;font-weight:700;color:#dc2626}
+.handoff-notif-body{font-size:12px;color:#7f1d1d;line-height:1.5}
+.handoff-notif-actions{display:flex;gap:8px;margin-top:10px}
+.handoff-notif-btn{font-size:11px;padding:5px 12px;border-radius:6px;cursor:pointer;font-weight:600;border:none}
+.handoff-notif-btn.accept{background:#ef4444;color:#fff}
+.handoff-notif-btn.dismiss{background:#fff;color:#64748b;border:1px solid #e2e8f0}
+
+/* 未读消息红点徽章（头像右上角，类似微信） */
+.unread-dot{position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 5px;box-shadow:0 1px 3px rgba(239,68,68,0.4);border:1.5px solid #fff;z-index:2}
+
+/* 平台标签未读红点 */
+.pf-unread{display:inline-flex;align-items:center;justify-content:center;background:#ef4444;color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;padding:0 4px;margin-left:4px;vertical-align:middle}
