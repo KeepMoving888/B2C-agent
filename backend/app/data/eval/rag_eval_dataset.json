@@ -1,0 +1,128 @@
+[
+  {
+    "query": "我的包裹几天能到？",
+    "intent": "物流查询",
+    "relevant_docs": ["faq_001"],
+    "lang": "zh",
+    "note": "配送时效咨询，命中 faq_001"
+  },
+  {
+    "query": "标准物流配送时效是多久？什么时候到货？",
+    "intent": "物流查询",
+    "relevant_docs": ["faq_001"],
+    "lang": "zh",
+    "note": "包含 物流/配送/时效/到货 多关键词，应稳定命中 faq_001"
+  },
+  {
+    "query": "物流显示已签收，但是我没收到包裹怎么办？",
+    "intent": "物流查询",
+    "relevant_docs": ["faq_002"],
+    "lang": "zh",
+    "note": "签收但未收到场景，命中 faq_002"
+  },
+  {
+    "query": "tracking shows delivered but I never received it",
+    "intent": "物流查询",
+    "relevant_docs": ["faq_002"],
+    "lang": "en",
+    "note": "英文版签收未收到，命中 faq_002"
+  },
+  {
+    "query": "商品质量问题，七天之内可以退款吗？",
+    "intent": "售后退款",
+    "relevant_docs": ["faq_003"],
+    "lang": "zh",
+    "note": "退款政策咨询，命中 faq_003"
+  },
+  {
+    "query": "退款多久能到账？原路退回吗？",
+    "intent": "售后退款",
+    "relevant_docs": ["faq_003"],
+    "lang": "zh",
+    "note": "退款到账时间，同时命中 faq_003 与 faq_007（流程中含退款处理时间）"
+  },
+  {
+    "query": "收到的商品损坏了，能补发或退款吗？",
+    "intent": "售后退款",
+    "relevant_docs": ["faq_004"],
+    "lang": "zh",
+    "note": "商品损坏处理，命中 faq_004"
+  },
+  {
+    "query": "退换货流程是什么？需要退货标签吗？",
+    "intent": "售后退款",
+    "relevant_docs": ["faq_007", "faq_003"],
+    "lang": "zh",
+    "note": "退换货流程咨询，主相关 faq_007，附带 faq_003"
+  },
+  {
+    "query": "how to return or exchange an item? return label?",
+    "intent": "售后退款",
+    "relevant_docs": ["faq_007"],
+    "lang": "en",
+    "note": "英文退换货流程，命中 faq_007"
+  },
+  {
+    "query": "蓝牙耳机的续航时间和降噪效果怎么样？支持防水吗？",
+    "intent": "商品咨询",
+    "relevant_docs": ["faq_005"],
+    "lang": "zh",
+    "note": "蓝牙耳机参数咨询，命中 faq_005"
+  },
+  {
+    "query": "wireless earbuds bluetooth noise cancelling battery life",
+    "intent": "商品咨询",
+    "relevant_docs": ["faq_005"],
+    "lang": "en",
+    "note": "英文耳机咨询，命中 faq_005"
+  },
+  {
+    "query": "智能手表支持心率和血氧监测吗？续航几天？",
+    "intent": "商品咨询",
+    "relevant_docs": ["faq_006"],
+    "lang": "zh",
+    "note": "智能手表参数咨询，命中 faq_006"
+  },
+  {
+    "query": "支付方式有哪些？支持PayPal和信用卡吗？安全吗？",
+    "intent": "合规政策",
+    "relevant_docs": ["faq_008"],
+    "lang": "zh",
+    "note": "支付安全咨询，命中 faq_008"
+  },
+  {
+    "query": "你们怎么保护我的隐私数据？符合GDPR吗？可以申请删除数据吗？",
+    "intent": "合规政策",
+    "relevant_docs": ["faq_009"],
+    "lang": "zh",
+    "note": "隐私/GDPR 咨询，命中 faq_009"
+  },
+  {
+    "query": "跨境订单需要交关税吗？清关怎么处理？",
+    "intent": "合规政策",
+    "relevant_docs": ["faq_010"],
+    "lang": "zh",
+    "note": "跨境关税咨询，命中 faq_010"
+  },
+  {
+    "query": "do I need to pay customs tax for international shipping?",
+    "intent": "合规政策",
+    "relevant_docs": ["faq_010"],
+    "lang": "en",
+    "note": "英文关税咨询，命中 faq_010"
+  },
+  {
+    "query": "下单后能修改收货地址吗？怎么改地址？",
+    "intent": "订单管理",
+    "relevant_docs": ["faq_011"],
+    "lang": "zh",
+    "note": "修改地址咨询，命中 faq_011"
+  },
+  {
+    "query": "我的订单还没发货，催发货要多久？加急可以吗？",
+    "intent": "订单管理",
+    "relevant_docs": ["faq_012"],
+    "lang": "zh",
+    "note": "催发货/加急咨询，命中 faq_012"
+  }
+]

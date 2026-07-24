@@ -1,0 +1,35 @@
+# Qwen2.5-7B QLoRA 4-bit 微调配置
+# 单卡 24GB 显存即可完成训练
+
+# 基座模型（支持 HuggingFace 或本地路径）
+model_path: Qwen/Qwen2.5-7B-Instruct
+
+# 训练数据
+data_path: ../data/sample_dataset.json
+
+# 输出目录
+output_dir: ./outputs
+
+# 训练超参
+epochs: 3
+batch_size: 4
+lr: 2.0e-4
+
+# LoRA 配置
+lora_r: 64              # LoRA秩，越大表达能力越强，显存占用越多
+lora_alpha: 16          # LoRA缩放系数
+lora_dropout: 0.05      # Dropout防止过拟合
+
+# 量化配置（QLoRA 4-bit）
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_compute_dtype: bfloat16
+  bnb_4bit_use_double_quant: true
+
+# 训练优化
+gradient_accumulation_steps: 4
+warmup_ratio: 0.03
+lr_scheduler_type: cosine
+optim: paged_adamw_8bit
+bf16: true
