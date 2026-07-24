@@ -130,7 +130,7 @@ function renderConvList(filter=''){
     if(!filter)return true;
     return c.customer.name.toLowerCase().includes(filter.toLowerCase())||c.lastMsgZh.includes(filter);
   });
-  document.getElementById('convCnt').textContent=state.conversations.length+' 在线 · 高并发';
+  document.getElementById('convCnt').textContent=state.conversations.length+' 在线 · 实时服务中';
   const el=document.getElementById('convList');
   el.innerHTML='';
   if(list.length===0){el.innerHTML='<div style="text-align:center;color:#94a3b8;padding:30px;font-size:12px">未找到匹配的会话</div>';return}
@@ -620,7 +620,7 @@ async function sendMsg(){
 }
 
 /**
- * 仿真客户回复（真实业务逻辑）
+ * 客户自动回复（真实业务逻辑）
  * 客服发送回复后，客户读取并在1-3秒后发送新的消息
  * 客户回复内容基于客服回复的关键词生成，还原真实对话流程
  */
@@ -695,37 +695,170 @@ document.getElementById('aiSuggestBtn').onclick=async ()=>{
 
 /* ============ 触发AI建议：客户消息→AI分析→建议卡片 ============ */
 // 离线模式本地生成AI建议（无LLM API时的回退方案）
+// 场景细分：根据客户消息关键词识别更精确的子场景
+function detectSubScene(msg){
+  const m=(msg||'').toLowerCase();
+  if(/bluetooth|earphone|headphone|耳机|aptx|codec|降噪/i.test(m))return 'audio';
+  if(/battery|续航|待机|battery life/i.test(m))return 'battery';
+  if(/camera|相机|4k|webcam/i.test(m))return 'camera';
+  if(/smartwatch|watch|手表/i.test(m))return 'watch';
+  if(/drone|无人机/i.test(m))return 'drone';
+  if(/spec|参数|规格|dimension|尺寸/i.test(m))return 'spec';
+  if(/stock|库存|现货|在庫|disponible/i.test(m))return 'stock';
+  if(/compatib|兼容|互換|compatible/i.test(m))return 'compat';
+  if(/track|追踪|物流|tracking|配送|発送/i.test(m))return 'tracking';
+  if(/address|地址|住所|lieferadresse/i.test(m))return 'address';
+  if(/combine|merge|合并|多笔/i.test(m))return 'merge';
+  if(/how long|时效|多久|几天/i.test(m))return 'delivery_time';
+  if(/damage|损坏|破损|broken|破損/i.test(m))return 'damaged';
+  if(/refund|退款|返金|reembolso/i.test(m))return 'refund';
+  if(/wrong|发错|不对|間違|falsche/i.test(m))return 'wrong_item';
+  if(/warranty|保修|质保|garantie/i.test(m))return 'warranty';
+  if(/declined|payment|信用卡|paypal|支付失败|zahlung/i.test(m))return 'payment';
+  if(/customs|duty|关税|税関|zoll|invoice|发票/i.test(m))return 'customs';
+  if(/member|会员|coupon|优惠|gold|クーポン/i.test(m))return 'member';
+  if(/gdpr|privacy|data|delete.*account|隐私|数据/i.test(m))return 'privacy';
+  return 'general';
+}
+
+const SUGGESTION_BANK={
+  pre_order:{
+    general:[
+      '您好！感谢您的咨询。该商品目前有现货，下单后48小时内发货。产品支持7天无理由退换，12个月官方质保。请问您还想了解哪些规格信息呢？',
+      '您好！很高兴为您服务。这款产品是我们店铺的热销款，库存充足。下单后1-2个工作日内发货，支持全球配送。请问您对产品有什么具体疑问？我可以为您详细解答。',
+      '您好！感谢关注我们的产品。当前批次现货供应中，下单即可安排发货。我们提供12个月官方质保和7天无理由退换服务。请问您需要了解产品的哪些参数？'
+    ],
+    audio:[
+      '您好！感谢咨询。这款蓝牙耳机支持aptX HD低延迟编码，蓝牙5.3稳定连接，续航可达32小时（配合充电盒）。主动降噪深度-42dB，通话降噪双麦克风阵列。现货充足，下单48小时内发货，支持7天无理由退换。',
+      '您好！为您介绍这款耳机：采用最新蓝牙5.3芯片，支持LDAC+aptX Adaptive双高清编码，延迟低至45ms。单次续航8小时，配合充电盒32小时。IPX5防水运动适用。有什么其他想了解的吗？'
+    ],
+    battery:[
+      '您好！这款产品的电池续航表现优秀：满电状态下可连续使用72小时（待机模式）/18小时（工作模式）。支持PD快充，30分钟充至50%。电池循环寿命≥500次。请问您还有其他问题吗？',
+      '您好！关于续航：标配5000mAh大容量电池，典型场景续航7天，重度使用3天。支持18W快充，1.5小时充满。低电量智能省电模式可延长30%续航。下单即发货，欢迎选购！'
+    ],
+    camera:[
+      '您好！这款相机搭载1/2.3英寸CMOS传感器，4K/30fps视频录制，支持EIS电子防抖。1200万像素照片输出，f/1.8大光圈弱光表现出色。配备专用收纳包和32GB存储卡。现货供应中。',
+      '您好！为您介绍：4K超清画质，索尼IMX415传感器，支持HDR和夜视模式。160°广角视野，IP67防水防尘。配套专用支架和Type-C数据线。请问您需要了解哪些技术细节？'
+    ],
+    watch:[
+      '您好！这款智能手表采用1.43英寸AMOLED retina屏幕，支持Always-On Display。内置100+运动模式，心率/血氧/睡眠全天监测。蓝牙通话，14天超长续航。5ATM防水。现货充足48小时发货。',
+      '您好！为您介绍这款手表：蓝宝石玻璃表镜，不锈钢表壳，支持ESIM独立通话。血氧心率GPS全天候监测，120+运动模式。续航7-14天。磁吸快充。有什么想深入了解的吗？'
+    ],
+    spec:[
+      '您好！产品规格如下：尺寸180×75×35mm，重量约280g。材质航空铝合金+ABS。工作温度-10°C~50°C。接口Type-C 3.0。兼容iOS/Android。请问您还需要哪些详细参数？',
+      '您好！详细规格：产品尺寸见详情页图示，支持WiFi 6+蓝牙5.2双连接。输入5V/2A，续航8小时。包装含主机+配件包+说明书。支持全球电压100-240V。还有其他问题随时问我！'
+    ],
+    stock:[
+      '您好！目前该商品库存充足，白色/黑色现货供应中。下单后48小时内从深圳仓发货，3-7个工作日全球送达。支持提前预定热门颜色，到货后第一时间通知您。请问您需要下单吗？',
+      '您好！实时库存更新：当前批次有货，热门款库存紧张建议尽快下单。下单后1-2个工作日发货，DHL/FedEx国际快递3-5天送达。可订阅到货提醒。有什么能帮您的？'
+    ],
+    compat:[
+      '您好！该产品兼容性说明：支持iOS 12+/Android 8+系统，蓝牙5.0+设备。CarPlay/Android Auto双认证。与市面主流车型2015年后款兼容。如有具体车型可为您核实适配性。',
+      '您好！兼容性信息：支持Windows 10+/macOS 10.15+/Linux。USB-C接口即插即用无需驱动。支持主流软件如Zoom/Teams/OBS。请问您的使用场景是什么？我为您确认兼容性。'
+    ]
+  },
+  ordered:{
+    tracking:[
+      '您好！已为您查询订单状态。订单号#{ORDER}的包裹已于昨日发出，当前在【国际转运中心】，预计2-3个工作日送达。物流单号已同步至您的邮箱，可在订单详情页实时追踪。如超过预计时间未收到，请随时联系我。',
+      '您好！为您核实物流：包裹正在跨境运输中，目前已完成清关，正在派送至您所在城市。预计送达时间：2个工作日内。您可点击订单详情查看完整物流轨迹。有任何问题随时找我！',
+      '您好！订单状态更新：包裹已抵达目的国，正在安排最后一公里派送。预计今日或明日送达。如派送员联系不上您，包裹将暂存就近网点，可联系改约派送时间。请问还有其他需要吗？'
+    ],
+    address:[
+      '您好！已为您修改订单配送地址。新地址已同步至物流系统，如包裹尚未发出可立即生效；如已发出，我将联系快递公司尝试拦截改派。请确认新地址准确无误，避免影响配送。',
+      '您好！地址修改请求已收到。系统已更新您的配送信息，修改将在1小时内生效。如包裹已进入派送环节，我为您备注让派送员电话确认。请保持手机畅通。还有其他问题吗？',
+      '您好！已处理地址变更：原地址→新地址同步完成。跨境订单修改窗口为发货后24小时内，我已为您加急处理。建议下次下单后尽快核对地址信息。请问还有什么可以帮您？'
+    ],
+    merge:[
+      '您好！已为您查询到2笔订单，可以申请合并发货以节省运费。合并后将从同一仓库发出，预计发货时间不变，物流单号将统一。是否需要我为您办理合并？合并后预计3-5个工作日送达。',
+      '您好！多笔订单合并说明：系统支持同一收件人同一地址的订单合并。合并后总运费按首重计算更优惠。我已为您备注合并请求，仓库将在发货前处理。请问您确认合并吗？',
+      '您好！已查看您的多笔订单。合并发货需满足：同收件人+同地址+同仓库库存。我已为您提交合并申请，预计1个工作日内完成。合并后仅产生1个物流单号更便于追踪。'
+    ],
+    delivery_time:[
+      '您好！发货时效说明：现货订单48小时内发货，定制款5-7个工作日。跨境运输时效：北美/欧洲5-8个工作日，东南亚3-5个工作日，南美7-12个工作日。节假日不发货。请问您何时需要收到？',
+      '您好！为您预估时效：下单后1-2个工作日发货，国际快递3-7个工作日送达，清关1-2个工作日。如遇旺季或海关抽查可能顺延2-3天。如急需可升级DHL Express加急服务（2-3天达）。',
+      '您好！时效详情：商品48小时内出库，目的地不同时效有差异。美国/英国5-7天，德国/法国5-8天，日本3-5天，巴西8-12天。您可在订单页查看预计送达时间。还有什么需要了解？'
+    ],
+    general:[
+      '您好！已为您查询订单状态，包裹目前正在配送中，预计2-3个工作日内送达。您可以在订单详情页查看实时物流轨迹。如未按时收到，请随时联系我为您处理。',
+      '您好！您的订单一切正常。商品已出库正在派送中，物流信息已更新至系统。您可登录账户在"我的订单"查看完整轨迹。预计送达时间前1天会有短信提醒。'
+    ]
+  },
+  aftersales:{
+    damaged:[
+      '您好！非常抱歉商品到货时损坏。请拍摄以下照片：外包装+损坏部位+商品全貌，发送至客服邮箱或直接上传至此对话。核实后我立即为您办理换货，新包裹将在1个工作日内重新发出，无需您承担任何费用。',
+      '您好！很抱歉给您带来不便。收到损坏商品请提供：1)损坏照片 2)订单号 3)外包装照片。我将在1小时内为您审核并安排换货/退款。换货优先顺丰发货，退款1-3个工作日原路退回。请放心我们会妥善解决。',
+      '您好！商品损坏问题为您优先处理。请拍照保留证据（含快递单号），我们承诺：换货48小时内重新发出，全额退款3个工作日内到账。同时为您申请5%补偿优惠券。给您带来的困扰深表歉意。'
+    ],
+    refund:[
+      '您好！退款申请已受理。请提供订单号和退款原因，我将在1-2个工作日内完成审核。退款将原路退回至您的支付账户，到账时间3-7个工作日（视支付方式而定）。审核进度可随时查询。',
+      '您好！已为您发起退款流程。退款金额将全额原路退回，信用卡3-7个工作日，PayPal 1-3个工作日，本地支付1-2个工作日。退款单号将通过邮件通知您。请问还有其他问题吗？',
+      '您好！退款办理说明：审核通过后款项原路退回。如选择优惠券补偿可立即到账且金额+10%。请您确认退款方式：原路退回/优惠券补偿/账户余额。我为您加急处理。'
+    ],
+    wrong_item:[
+      '您好！非常抱歉发错商品。请拍照收到的商品并提供订单号，我立即为您安排正确的商品重新发货，错误商品将由快递上门取回（无需您寄出）。新包裹48小时内发出，给您带来不便敬请谅解。',
+      '您好！发错商品问题已记录。处理方案：1)正确商品48小时内重新发出 2)错误商品安排上门取件 3)为您申请10%优惠券补偿。请确认收件地址是否变更。深表歉意！',
+      '您好！抱歉发错货。请提供：错发商品照片+订单号。我将为您：①立即补发正确商品（免运费）②安排取回错发商品③申请15%补偿券。处理全程无需您额外付费。请放心！'
+    ],
+    warranty:[
+      '您好！质保服务说明：本产品享受12个月官方质保，质保期内非人为损坏免费维修/换新。请提供购买凭证和故障描述，我为您创建质保工单。维修周期5-7个工作日，可提供备用机服务。',
+      '您好！质保期内问题为您处理。请提供：1)订单号 2)故障现象描述/视频 3)购买日期。审核通过后可享受免费维修/换新。如需加急可付费升级3天快修服务。请问具体故障是什么？',
+      '您好！关于质保：产品12个月官方质保覆盖非人为硬件故障。请描述故障现象，我为您判断是否符合质保条件。符合条件的可免费换新，工单创建后3-5个工作日处理完成。'
+    ],
+    general:[
+      '您好！非常抱歉给您带来不便。请提供您的订单号，我立即为您核实情况并办理退款/换货手续。我们会在1-2个工作日内完成处理，退款将原路退回。',
+      '您好！已收到您的售后请求。请提供订单号和问题描述，我为您加急处理。售后方案：退款/换货/维修，您可选择最适合的方式。处理进度实时通知，请放心！'
+    ]
+  },
+  repurchase:{
+    general:[
+      '您好！欢迎回来！感谢您再次选择我们的CarPlay产品。作为老客户，您可享受复购专属9折优惠。请问这次想了解哪款CarPlay型号？我们有无线CarPlay盒子、有线CarPlay转换器等多款产品可选。',
+      '您好！很高兴再次为您服务！感谢您的信赖。老客户复购专享：9折优惠+免邮+优先发货。本次有什么需求？我们的新品无线CarPlay盒子支持即插即用，兼容99%车型，是否为您介绍？',
+      '您好！欢迎老朋友回来！感谢持续支持。您的账户有未使用的复购优惠券（9折，有效期30天）。请问这次需要什么产品？我可以根据您上次购买记录为您推荐搭配款。'
+    ],
+    audio:[
+      '您好！欢迎回来！您上次选购了我们的蓝牙耳机，这次为您推荐升级款：新一代支持LE Audio+LC3编码，续航提升40%，降噪深度-48dB。老客户专享价8.5折，是否为您详细介绍？',
+      '您好！感谢复购！注意到您是耳机老用户，新品TWS Pro 3已上市：双动圈单元+LDAC高清音质+AI通话降噪。老客户专享预售价直降15%，加赠定制保护套。有兴趣了解吗？'
+    ]
+  },
+  escalation:{
+    general:[
+      '您好！非常抱歉让您有了不好的体验。我已将您的问题升级至高级客服主管，主管会在5分钟内主动联系您。同时为您申请10%优惠券作为补偿。我们非常重视您的反馈，会彻底解决您的问题。',
+      '您好！对您的不佳体验深表歉意。我理解您的诉求很重要，已为您升级至VIP处理通道：高级主管15分钟内回电+10%补偿券+问题全程跟踪。请您稍候，我们会给您满意的处理方案。',
+      '您好！非常抱歉造成了困扰。您的问题已优先升级处理：①客服主管5分钟内联系您 ②补偿10%无门槛优惠券 ③问题解决后由专员回访确认满意度。请您保持电话畅通，我们一定负责到底。'
+    ]
+  }
+};
+
+function pickSuggestion(stageKey,subScene){
+  const bank=SUGGESTION_BANK[stageKey]||SUGGESTION_BANK.pre_order;
+  const pool=(bank[subScene]&&bank[subScene].length>0)?bank[subScene]:(bank.general||bank[Object.keys(bank)[0]]);
+  const idx=Math.floor(Math.random()*pool.length);
+  return pool[idx].replace(/#\{ORDER\}/g,'CP'+Math.floor(100000+Math.random()*900000));
+}
+
 function genOfflineSuggestion(conv,customerMsg){
   const msg=customerMsg.zh||customerMsg.text||'';
   const stage=detectStage(msg);
+  const subScene=detectSubScene(msg);
   const agentLabels={consultation:'咨询Agent',order:'订单Agent',aftersales:'售后Agent',repurchase:'复购Agent',human_handoff:'人工转接Agent'};
   const intentMap={pre_order:'商品咨询',ordered:'物流查询',aftersales:'售后退款',repurchase:'复购咨询',escalation:'投诉处理'};
   const intent=intentMap[stage.key]||'商品咨询';
-
-  // 根据阶段生成建议回复
-  const suggestions={
-    pre_order:'您好！感谢您的咨询。该商品目前有现货，下单后48小时内发货。产品支持7天无理由退换，12个月官方质保。请问您还想了解哪些规格信息呢？',
-    ordered:'您好！已为您查询订单状态，包裹目前正在配送中，预计2-3个工作日内送达。您可以在订单详情页查看实时物流轨迹。如未按时收到，请随时联系我为您处理。',
-    aftersales:'您好！非常抱歉给您带来不便。请提供您的订单号，我立即为您核实情况并办理退款/换货手续。我们会在1-2个工作日内完成处理，退款将原路退回。',
-    repurchase:'您好！欢迎回来！感谢您再次选择我们的CarPlay产品。作为老客户，您可享受复购专属9折优惠。请问这次想了解哪款CarPlay型号？我们有无线CarPlay盒子、有线CarPlay转换器等多款产品可选。',
-    escalation:'您好！非常抱歉让您有了不好的体验。我已将您的问题升级至高级客服主管，主管会在5分钟内主动联系您。同时为您申请10%优惠券作为补偿。'
-  };
-
+  const suggestionText=pickSuggestion(stage.key,subScene);
   return {
-    reply_zh:suggestions[stage.key]||suggestions.pre_order,
-    reply:suggestions[stage.key]||suggestions.pre_order,
+    reply_zh:suggestionText,
+    reply:suggestionText,
     agent:agentLabels[stage.agent]||'咨询Agent',
-    route:'离线模式 · 规则路由 → '+agentLabels[stage.agent],
+    route:'离线模式 · 规则路由 → '+agentLabels[stage.agent]+'（场景：'+subScene+'）',
     intent:intent,
     sentiment:{joy:20,neutral:60,negative:20},
     sources:[
-      {id:'faq_local_001',category:'离线知识库',content:'基于本地规则引擎生成的建议回复，覆盖5大客服场景标准话术。',score:0.88},
+      {id:'faq_local_001',category:'离线知识库',content:'基于本地规则引擎+场景话术库生成的建议回复，覆盖5大客服场景×20+子场景×多套话术。',score:0.88},
     ],
     agent_chain:[stage.agent],
     trace:[
-      {node:'analyze',agent:'controller',action:'离线意图识别：'+intent,status:'success'},
+      {node:'analyze',agent:'controller',action:'离线意图识别：'+intent+'（子场景：'+subScene+'）',status:'success'},
       {node:'route',agent:'controller',action:'规则路由 → '+agentLabels[stage.agent],status:'success'},
-      {node:stage.agent,agent:stage.agent,action:'生成建议回复',status:'success'},
+      {node:stage.agent,agent:stage.agent,action:'匹配话术库['+stage.key+'/'+subScene+']生成建议回复',status:'success'},
     ],
     handoff_reason:stage.key==='escalation'?'complaint':'',
     capability_check:{capable:true,reason:'离线模式',suggested_handoff:'',confidence:0.85,faithfulness:0.92},
@@ -960,7 +1093,7 @@ window.adoptSuggestion=adoptSuggestion;
 window.editSuggestion=editSuggestion;
 window.rejectSuggestion=rejectSuggestion;
 
-/* ============ 仿真客户追问（内部函数，由scheduleCustomerReply调用） ============ */
+/* ============ 客户追问（内部函数，由scheduleCustomerReply调用） ============ */
 function genFollowUp(replyText,lang){
   // 基于客服回复关键词的追问规则库（28条，覆盖10类场景）
   // 注意：更具体的规则需放在前面，避免被通用规则抢先匹配
