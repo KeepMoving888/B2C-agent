@@ -160,19 +160,19 @@ window.API = (function(){
   function generateOfflineReply(msgLower, intent){
     // ===== 咨询Agent场景 =====
     if(intent === '商品咨询' || intent === '缺货询问'){
-      if(/bluetooth|蓝牙|bt/.test(msgLower))
-        return '您好！这款无线蓝牙耳机 Pro 搭载蓝牙5.3芯片，连接更稳定、延迟更低，兼容主流蓝牙设备。同时支持主动降噪和IPX5防水，续航可达32小时。请问还有其他想了解的吗？';
+      if(/carplay|蓝牙|bluetooth|bt|wireless/.test(msgLower))
+        return '您好！这款无线CarPlay适配器搭载蓝牙5.0芯片，连接更稳定、延迟更低，兼容主流车型（2015年后款）。同时支持Siri语音控制和即插即用，续航可达8小时。请问还有其他想了解的吗？';
       if(/battery|续航|电池|battery life/.test(msgLower))
-        return '您好！蓝牙耳机 Pro 满电续航约32小时（配合充电仓），单次使用约8小时。充电仓支持快充，充电15分钟即可使用2小时。';
+        return '您好！AI CarPlay Box Pro 满电续航约8小时（车载模式），待机可达72小时。支持PD快充，充电30分钟即可使用2小时。';
       if(/waterproof|防水|ipx|ip\d/.test(msgLower))
-        return '您好！蓝牙耳机 Pro 支持IPX5级防水，可防雨水和汗渍，适合运动场景使用。但不建议浸泡在水中或淋浴时佩戴。';
-      if(/compat|兼容|iphone|android|ios|安卓|苹果/.test(msgLower))
-        return '您好！蓝牙耳机 Pro 兼容iOS和Android系统，支持蓝牙5.0及以上设备。配对方式：长按电源键3秒进入配对模式，在手机蓝牙设置中选择设备即可。';
+        return '您好！CarPlay盒子支持工作温度-10°C~50°C，可适应车载环境。但不建议长时间暴晒或浸水。请安装在车内通风位置使用。';
+      if(/compat|兼容|iphone|android|ios|安卓|苹果|车型/.test(msgLower))
+        return '您好！CarPlay适配器兼容iOS 12+和Android 8+系统，支持蓝牙5.0及以上设备。配对方式：插入车载USB接口，手机蓝牙连接CarPlay即可。与市面主流车型2015年后款兼容。';
       if(/stock|库存|现货|有货|availability/.test(msgLower))
         return '您好！该商品目前有现货，下单后48小时内发货。如遇旺季可能延迟至72小时，建议尽早下单。您可以在商品页面查看实时库存状态。';
       if(/warranty|保修|质保|guarantee/.test(msgLower))
-        return '您好！蓝牙耳机 Pro 提供为期12个月的官方质保，涵盖非人为损坏的硬件故障。质保期内可免费维修或更换，请联系客服提供订单号申请售后服务。';
-      return '您好！感谢您的咨询。关于您咨询的产品，为您整理以下信息：无线蓝牙耳机 Pro（蓝牙5.3/续航32h/IPX5防水/降噪）和智能手表 Series 7（1.8寸AMOLED/IP68/续航7天）。请问您具体想了解哪方面？例如规格参数、兼容性、库存状态等。';
+        return '您好！CarPlay产品提供为期12个月的官方质保，涵盖非人为损坏的硬件故障。质保期内可免费维修或更换，请联系客服提供订单号申请售后服务。';
+      return '您好！感谢您的咨询。关于您咨询的产品，为您整理以下信息：无线CarPlay适配器（蓝牙5.0/续航8h/即插即用）和AI CarPlay Box Pro（4G全网通/GPS导航/AI语音助手/续航8h）。请问您具体想了解哪方面？例如规格参数、兼容性、库存状态等。';
     }
 
     // ===== 订单Agent场景 =====
@@ -244,8 +244,8 @@ window.API = (function(){
       '催发货': {id:'faq_012', category:'订单管理', content:'催发货处理：标准订单48小时内发货，旺季可能延迟至72小时。加急订单24小时内发货，需支付加急费。可在订单详情页查看实时状态。', score:0.89},
       '地址修改': {id:'faq_011', category:'订单管理', content:'修改地址：订单未发货前可免费修改收货地址，发货后需联系物流公司拦截改派，可能产生额外费用。请在下单后24小时内确认地址。', score:0.91},
       '售后退款': {id:'faq_003', category:'售后退款', content:'退款政策：商品质量问题7天内可全额退款，3-5个工作日原路退回。非质量问题需保持商品完好，扣除运费后退款。定制商品不支持无理由退货。', score:0.88},
-      '商品咨询': {id:'faq_005', category:'商品咨询', content:'无线蓝牙耳机 Pro：蓝牙5.3，续航32小时，支持主动降噪，IPX5防水。兼容iOS/Android。保修期12个月。', score:0.85},
-      '缺货询问': {id:'faq_005', category:'商品咨询', content:'无线蓝牙耳机 Pro：蓝牙5.3，续航32小时，支持主动降噪，IPX5防水。兼容iOS/Android。保修期12个月。', score:0.83},
+      '商品咨询': {id:'faq_005', category:'商品咨询', content:'无线CarPlay适配器：蓝牙5.0，续航8小时，支持Siri语音控制，即插即用。兼容iOS 12+/Android 8+。保修期12个月。', score:0.85},
+      '缺货询问': {id:'faq_005', category:'商品咨询', content:'无线CarPlay适配器：蓝牙5.0，续航8小时，支持Siri语音控制，即插即用。兼容iOS 12+/Android 8+。保修期12个月。', score:0.83},
       '支付问题': {id:'faq_008', category:'合规政策', content:'支付安全：我们支持信用卡、PayPal、Apple Pay、Google Pay及本地支付方式，全部经PCI-DSS认证加密。不存储完整卡号信息。', score:0.90},
       '投诉处理': {id:'faq_003', category:'售后退款', content:'退款政策：商品质量问题7天内可全额退款，3-5个工作日原路退回。', score:0.75},
     };

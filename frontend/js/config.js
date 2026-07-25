@@ -7,7 +7,7 @@ window.AppConfig = {
   // 后端 API 地址
   API_BASE: '',  // 同源访问（前端由后端 8000 端口提供）
   // WebSocket 地址（实时会话推送）
-  WS_BASE: 'ws://localhost:8000/ws',
+  WS_BASE: 'ws://localhost:8090/ws',
   // 后端健康检测超时（毫秒）- 后端启动时需探测DeepSeek API，需较长超时
   HEALTH_TIMEOUT: 10000,
   // 是否已连接后端（运行时动态设置）

@@ -35,7 +35,7 @@ function translateToZh(msg,code){
   // 支付问题
   if(/credit card|declined|paypal|payment|支付|支払い|zahlung|pago|paiement|pagamento|card details|karte/i.test(m))return '支付遇到问题，咨询支付方式';
   // 商品规格咨询
-  if(/aptx|bluetooth|battery|smartwatch|camera|dimensions|ergonomic|spec|仕様|spezifikation|especificacion|specification|防水|compatib|互換|compatible|互換性/i.test(m))return '咨询商品规格参数与兼容性';
+  if(/carplay|wireless|adapter|box|bluetooth|battery|续航|usb|mini|便携|display|屏幕|dimensions|ergonomic|spec|仕様|spezifikation|especificacion|specification|防水|compatib|互換|compatible|互換性|车型/i.test(m))return '咨询商品规格参数与兼容性';
   // 库存与发货时效
   if(/in stock|white color|christmas|shipping.*take|how long|delivery|在庫|lag|stock|disponible|verfugbar|versand|envio|発送時期|disponibilite|disponibilita|disponibilidade/i.test(m))return '咨询商品库存与配送时效';
   // 物流追踪
@@ -205,7 +205,7 @@ function genChatHistory(conv){
   const now=new Date();
   let tOff=rounds*DataGen.ri(20,40);
 
-  // 客户消息关键词 → 匹配的agentReplies索引（9条回复：0=蓝牙耳机 1=手表 2=物流 3=换货 4=信用卡 5=关税 6=会员 7=GDPR 8=通用产品规格）
+  // 客户消息关键词 → 匹配的agentReplies索引（9条回复：0=CarPlay盒子 1=USB CarPlay 2=物流 3=换货 4=信用卡 5=关税 6=会员 7=GDPR 8=通用CarPlay规格）
   function matchAgentReply(cMsg){
     // 归一化：转小写 + 去除重音符号（处理é→e, ã→a, ü→u等）
     // 注意：正则关键词也必须用ASCII无重音版本，才能匹配归一化后的输入
@@ -231,12 +231,12 @@ function genChatHistory(conv){
     if(/two.*order|combine|shipment|merge|複数|注文|bestellungen|pedidos|commandes|ordini|まとめる|合并|多笔|zwei.*bestellung|due.*ordini|dois.*pedidos|deux.*commandes/i.test(m))return 2;
     // 库存/现货 → 通用产品规格
     if(/stock|in stock|white color|disponible|verfugbar|在庫|lag|库存|现货|有货|availability|disponibilidad|verfugbarkeit|disponibilite|disponibilita|disponibilidade|erhaltlich|disponible/i.test(m))return 8;
-    // 1=智能手表类（电池续航/手表）
-    if(/battery.*life|smartwatch|smart.*watch|always.*on.*display|watch.*strap|watch.*band|续航|待机|akku.*laufzeit|akkulaufzeit|bateria.*dura|autonomie|batteria.*durata|bateria.*duracao|smarte uhr|montre connectee|reloj inteligente|orologio smart|relogio inteligente|スマートウォッチ|バッテリー|電池|持続時間|常時表示|スマホ|時計/i.test(m))return 1;
-    // 0=蓝牙耳机类（aptX/蓝牙/耳机/编解码器）
-    if(/aptx|bluetooth|earphone|earbuds|headphone|codec|latency|降噪|耳机|headset|kopfhorer|auricular|casque|cuffie|fone|latenz|codific|codec|イヤホン|ヘッドホン|ノイズキャンセリング|蓝牙/i.test(m))return 0;
-    // 8=通用产品规格（相机/椅子/尺寸/兼容性/Mac/4K等）
-    if(/camera|kamera|camara|camera| appareil photo|fotocamera|4k|mac|compatible|kompatibel|compatib|互換|dimensions|masse|dimensiones|dimensions|dimensioni|dimensoes|ergonomic|chair|silla|stuhl|chaise|sedia|cadeira|spec|spezifikation|especificacion|specification|仕様|防水|规格|尺寸|参数|drone|webcam|projector|projektor|proyector|projecteur|proiettore|projetor/i.test(m))return 8;
+    // 1=USB CarPlay类（有线连接/USB/转换器）
+    if(/usb.*carplay|usb|有线|转换器|dongle|wired|kabel|cabo|cavo|câble|续航|待机|akku.*laufzeit|akkulaufzeit|bateria.*dura|autonomie|batteria.*durata|bateria.*duracao|スマートウォッチ|バッテリー|電池|持続時間|常時表示/i.test(m))return 1;
+    // 0=CarPlay盒子类（CarPlay/无线/蓝牙/适配器）
+    if(/carplay|wireless|adapter|bluetooth|box|aptx|codec|latency|降噪|耳机|headset|kopfhorer|auricular|casque|cuffie|fone|latenz|codific|codec|イヤホン|ヘッドホン|ノイズキャンセリング|蓝牙|车载/i.test(m))return 0;
+    // 8=通用CarPlay规格（显示器/尺寸/兼容性/车型/4K等）
+    if(/carplay|display|screen|显示器|屏幕|kamera|camara|camera|4k|mac|compatible|kompatibel|compatib|互換|dimensions|masse|dimensiones|dimensions|dimensioni|dimensoes|ergonomic|chair|silla|stuhl|chaise|sedia|cadeira|spec|spezifikation|especificacion|specification|仕様|防水|规格|尺寸|参数|车型|car model|projector|projektor|proyector|projecteur|proiettore|projetor/i.test(m))return 8;
     // 默认：通用产品规格
     return 8;
   }
@@ -698,11 +698,11 @@ document.getElementById('aiSuggestBtn').onclick=async ()=>{
 // 场景细分：根据客户消息关键词识别更精确的子场景
 function detectSubScene(msg){
   const m=(msg||'').toLowerCase();
-  if(/bluetooth|earphone|headphone|耳机|aptx|codec|降噪/i.test(m))return 'audio';
+  if(/carplay|wireless|adapter|盒子|box|车载|bluetooth|aptx/i.test(m))return 'carplay_audio';
   if(/battery|续航|待机|battery life/i.test(m))return 'battery';
-  if(/camera|相机|4k|webcam/i.test(m))return 'camera';
-  if(/smartwatch|watch|手表/i.test(m))return 'watch';
-  if(/drone|无人机/i.test(m))return 'drone';
+  if(/carplay.*display|display|屏幕|显示器|4k|carplay.*screen/i.test(m))return 'carplay_display';
+  if(/usb.*carplay|usb|有线|转换器|dongle/i.test(m))return 'carplay_usb';
+  if(/mini.*carplay|mini|便携|portable/i.test(m))return 'carplay_mini';
   if(/spec|参数|规格|dimension|尺寸/i.test(m))return 'spec';
   if(/stock|库存|现货|在庫|disponible/i.test(m))return 'stock';
   if(/compatib|兼容|互換|compatible/i.test(m))return 'compat';
@@ -728,21 +728,21 @@ const SUGGESTION_BANK={
       '您好！很高兴为您服务。这款产品是我们店铺的热销款，库存充足。下单后1-2个工作日内发货，支持全球配送。请问您对产品有什么具体疑问？我可以为您详细解答。',
       '您好！感谢关注我们的产品。当前批次现货供应中，下单即可安排发货。我们提供12个月官方质保和7天无理由退换服务。请问您需要了解产品的哪些参数？'
     ],
-    audio:[
-      '您好！感谢咨询。这款蓝牙耳机支持aptX HD低延迟编码，蓝牙5.3稳定连接，续航可达32小时（配合充电盒）。主动降噪深度-42dB，通话降噪双麦克风阵列。现货充足，下单48小时内发货，支持7天无理由退换。',
-      '您好！为您介绍这款耳机：采用最新蓝牙5.3芯片，支持LDAC+aptX Adaptive双高清编码，延迟低至45ms。单次续航8小时，配合充电盒32小时。IPX5防水运动适用。有什么其他想了解的吗？'
+    carplay_audio:[
+      '您好！感谢咨询。这款无线CarPlay适配器支持iPhone 15 Pro Max，采用蓝牙5.0稳定连接，即插即用无需驱动。兼容iOS 12+系统，支持Siri语音控制。现货充足，下单48小时内发货，支持7天无理由退换。',
+      '您好！为您介绍这款CarPlay盒子：采用最新蓝牙5.0芯片，支持无线CarPlay+Android Auto双模，延迟低至45ms。即插即用，支持Siri/Google Assistant语音控制。兼容99%车型（2015年后款）。有什么其他想了解的吗？'
     ],
-    battery:[
-      '您好！这款产品的电池续航表现优秀：满电状态下可连续使用72小时（待机模式）/18小时（工作模式）。支持PD快充，30分钟充至50%。电池循环寿命≥500次。请问您还有其他问题吗？',
-      '您好！关于续航：标配5000mAh大容量电池，典型场景续航7天，重度使用3天。支持18W快充，1.5小时充满。低电量智能省电模式可延长30%续航。下单即发货，欢迎选购！'
+    carplay_battery:[
+      '您好！这款AI CarPlay Box Pro续航表现优秀：满电状态下可连续使用8小时（车载模式）/72小时（待机模式）。支持PD快充，30分钟充至50%。电池循环寿命≥500次。请问您还有其他问题吗？',
+      '您好！关于续航：标配5000mAh大容量电池，典型车载场景续航8小时，待机3天。支持18W快充，1.5小时充满。低电量智能省电模式可延长30%续航。下单即发货，欢迎选购！'
     ],
-    camera:[
-      '您好！这款相机搭载1/2.3英寸CMOS传感器，4K/30fps视频录制，支持EIS电子防抖。1200万像素照片输出，f/1.8大光圈弱光表现出色。配备专用收纳包和32GB存储卡。现货供应中。',
-      '您好！为您介绍：4K超清画质，索尼IMX415传感器，支持HDR和夜视模式。160°广角视野，IP67防水防尘。配套专用支架和Type-C数据线。请问您需要了解哪些技术细节？'
+    carplay_display:[
+      '您好！这款CarPlay车载显示器搭载7英寸IPS高清屏，1280×720分辨率，支持触摸操控。内置无线CarPlay+Android Auto，4K视频解码播放。配备专用车载支架和Type-C数据线。现货供应中。',
+      '您好！为您介绍：7英寸超清画质，IPS广角视野，支持HDR和夜视模式。内置无线CarPlay模块，支持Siri语音控制。配套专用车载支架和Type-C数据线。请问您需要了解哪些技术细节？'
     ],
-    watch:[
-      '您好！这款智能手表采用1.43英寸AMOLED retina屏幕，支持Always-On Display。内置100+运动模式，心率/血氧/睡眠全天监测。蓝牙通话，14天超长续航。5ATM防水。现货充足48小时发货。',
-      '您好！为您介绍这款手表：蓝宝石玻璃表镜，不锈钢表壳，支持ESIM独立通话。血氧心率GPS全天候监测，120+运动模式。续航7-14天。磁吸快充。有什么想深入了解的吗？'
+    carplay_usb:[
+      '您好！这款USB CarPlay转换器采用即插即用设计，无需蓝牙配对，有线连接更稳定零延迟。支持iOS 12+系统，兼容iPhone全系列。配备1.5米USB数据线和车载充电器。现货充足48小时发货。',
+      '您好！为您介绍这款USB CarPlay：Type-C接口即插即用，有线连接零延迟更稳定。支持CarPlay+Android Auto双模，兼容99%车型。配备1.5米数据线和车载充电器。有什么想深入了解的吗？'
     ],
     spec:[
       '您好！产品规格如下：尺寸180×75×35mm，重量约280g。材质航空铝合金+ABS。工作温度-10°C~50°C。接口Type-C 3.0。兼容iOS/Android。请问您还需要哪些详细参数？',
@@ -754,7 +754,7 @@ const SUGGESTION_BANK={
     ],
     compat:[
       '您好！该产品兼容性说明：支持iOS 12+/Android 8+系统，蓝牙5.0+设备。CarPlay/Android Auto双认证。与市面主流车型2015年后款兼容。如有具体车型可为您核实适配性。',
-      '您好！兼容性信息：支持Windows 10+/macOS 10.15+/Linux。USB-C接口即插即用无需驱动。支持主流软件如Zoom/Teams/OBS。请问您的使用场景是什么？我为您确认兼容性。'
+      '您好！兼容性信息：支持iOS 12+/Android 8+系统，蓝牙5.0+设备。CarPlay/Android Auto双认证。与市面主流车型2015年后款兼容，支持Siri/Google Assistant语音控制。请问您的车型是什么？我为您确认适配性。'
     ]
   },
   ordered:{
@@ -815,9 +815,9 @@ const SUGGESTION_BANK={
       '您好！很高兴再次为您服务！感谢您的信赖。老客户复购专享：9折优惠+免邮+优先发货。本次有什么需求？我们的新品无线CarPlay盒子支持即插即用，兼容99%车型，是否为您介绍？',
       '您好！欢迎老朋友回来！感谢持续支持。您的账户有未使用的复购优惠券（9折，有效期30天）。请问这次需要什么产品？我可以根据您上次购买记录为您推荐搭配款。'
     ],
-    audio:[
-      '您好！欢迎回来！您上次选购了我们的蓝牙耳机，这次为您推荐升级款：新一代支持LE Audio+LC3编码，续航提升40%，降噪深度-48dB。老客户专享价8.5折，是否为您详细介绍？',
-      '您好！感谢复购！注意到您是耳机老用户，新品TWS Pro 3已上市：双动圈单元+LDAC高清音质+AI通话降噪。老客户专享预售价直降15%，加赠定制保护套。有兴趣了解吗？'
+    carplay_audio:[
+      '您好！欢迎回来！您上次选购了我们的无线CarPlay适配器，这次为您推荐升级款AI CarPlay Box Pro：新一代支持4G全网通+在线导航，续航提升40%，AI语音助手深度优化。老客户专享价8.5折，是否为您详细介绍？',
+      '您好！感谢复购！注意到您是CarPlay老用户，新品AI CarPlay Box Pro已上市：内置4G+GPS+AI语音助手+在线流媒体。老客户专享预售价直降15%，加赠定制车载支架。有兴趣了解吗？'
     ]
   },
   escalation:{

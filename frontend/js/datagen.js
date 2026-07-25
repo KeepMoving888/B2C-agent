@@ -46,9 +46,9 @@ window.DataGen = {
     {name:'Ingrid Berg',country:'芬兰',lang:'English',code:'en',flag:'🇫🇮',avatar:'#b45309'}
   ],
   products:[
-    '无线蓝牙耳机 Pro','智能手表 Series 7','便携充电宝 20000mAh','4K高清摄像头','人体工学办公椅',
-    '陶瓷保温杯 500ml','LED护眼台灯','降噪头戴耳机','机械键盘 RGB','超薄笔记本电脑支架',
-    '空气净化器','扫地机器人','电动牙刷套装','智能门锁','投影仪 4K','降噪睡眠耳塞'
+    'Mini CarPlay 盒子','USB CarPlay 转换器','AI CarPlay Box Pro','无线 CarPlay 适配器','便携 CarPlay 一体机',
+    'CarPlay AI Box 标准版','CarPlay 导航盒子','车载 CarPlay 显示器','CarPlay 无线 dongle','便携 CarPlay 智能终端',
+    'CarPlay 多媒体盒子','CarPlay 投屏器','CarPlay 车机升级盒','CarPlay 语音助手盒子','CarPlay 4G 智能盒','CarPlay 便携终端'
   ],
   /* 会话消息池：10大场景×7语言，每语言15+条，覆盖跨境电商真实业务全貌 */
   customerMsgs:{
@@ -178,10 +178,10 @@ window.DataGen = {
       'J\'ai passé deux commandes séparées aujourd\'hui, pouvez-vous les combiner ?'
     ],
     it:[
-      'Salve, queste cuffie Bluetooth supportano il codec aptX? Ho bisogno di bassa latenza per il gaming.',
-      'Quanto dura la batteria di questo smartwatch con display sempre acceso?',
-      'Questa fotocamera 4K è compatibile con Mac? Uso Final Cut Pro.',
-      'Può dirmi le dimensioni esatte della sedia ergonomica? Ho spazio limitato.',
+      "Salve, questo adattatore CarPlay wireless supporta l'iPhone 15 Pro Max?",
+      "Quanto dura la batteria dell'AI CarPlay Box Pro con utilizzo continuo?",
+      'Questo Mini CarPlay è compatibile con la mia Toyota Corolla 2019?',
+      'Può dirmi le dimensioni esatte del USB CarPlay? Ho spazio limitato sul cruscotto.',
       'Il colore bianco è ancora disponibile? Mi serve prima di Natale.',
       'Quanto tempo richiede la spedizione in Australia? Sono a Sydney.',
       'Il mio numero di tracciamento non si aggiorna da 5 giorni, il pacco è perso?',
@@ -201,10 +201,10 @@ window.DataGen = {
       'Ho fatto due ordini separati oggi, potete combinarli in una spedizione?'
     ],
     pt:[
-      'Olá, este fone Bluetooth suporta o codec aptX? Preciso de baixa latência para jogos.',
-      'Qual a duração da bateria deste smartwatch com display sempre ligado?',
-      'Esta câmera 4K é compatível com Mac? Uso Final Cut Pro.',
-      'Pode me dizer as dimensões exatas da cadeira ergonômica? Tenho espaço limitado.',
+      'Olá, este adaptador CarPlay wireless suporta o iPhone 15 Pro Max?',
+      'Qual a duração da bateria do AI CarPlay Box Pro em uso contínuo?',
+      'Este Mini CarPlay é compatível com meu Toyota Corolla 2019?',
+      'Pode me dizer as dimensões exatas do USB CarPlay? Tenho espaço limitado no painel.',
       'A cor branca ainda está em estoque? Preciso antes do Natal.',
       'Quanto tempo leva o envio para a Austrália? Estou em Sydney.',
       'Meu número de rastreamento não atualiza há 5 dias, meu pacote está perdido?',
@@ -227,10 +227,10 @@ window.DataGen = {
   /* 客服回复模板池：每语言8+条，覆盖10大场景 */
   agentReplies:{
     en:[
-      {zh:'您好！这款蓝牙耳机Pro支持aptX Adaptive codec，延迟低至38ms，非常适合游戏使用。同时还支持AAC和SBC codec。',orig:'Hello! This Bluetooth Earphone Pro supports aptX Adaptive codec with latency as low as 38ms, perfect for gaming. It also supports AAC and SBC codecs.'},
-      {zh:'您好！智能手表Series 7在始终显示模式下续航约3天，关闭始终显示可达7天。支持磁吸快充，2小时充满。',orig:'Hi! The Smart Watch Series 7 lasts about 3 days with always-on display, and up to 7 days with it disabled. Magnetic fast charging takes 2 hours for a full charge.'},
+      {zh:'您好！这款无线CarPlay适配器支持iPhone 15 Pro Max，采用蓝牙5.0稳定连接，即插即用无需驱动。同时支持iOS 12+和Android系统。',orig:'Hello! This wireless CarPlay adapter supports iPhone 15 Pro Max, using Bluetooth 5.0 for stable connection, plug and play without drivers. It also supports iOS 12+ and Android.'},
+      {zh:'您好！AI CarPlay Box Pro在持续使用下车载电池续航约8小时，待机模式下可达72小时。支持PD快充，1.5小时充满。',orig:'Hi! The AI CarPlay Box Pro lasts about 8 hours of continuous use, and up to 72 hours in standby mode. PD fast charging takes 1.5 hours for a full charge.'},
       {zh:'您好！您的包裹目前在国际运输中，物流更新可能有3-5天延迟。包裹未丢失，预计2-3个工作日内抵达。',orig:'Hello! Your package is currently in international transit, tracking updates may be delayed 3-5 days. It\'s not lost, expected to arrive in 2-3 business days.'},
-      {zh:'非常抱歉耳机出现故障。已为您生成换新工单#EX20240715-4471，请提供购买凭证，我们24小时内免费补发。',orig:'We\'re sorry about the earphone issue. Replacement order #EX20240715-4471 has been created. Please provide your proof of purchase, we\'ll ship a replacement within 24 hours at no cost.'},
+      {zh:'非常抱歉CarPlay盒子出现故障。已为您生成换新工单#EX20240715-4471，请提供购买凭证，我们24小时内免费补发。',orig:'We\'re sorry about the CarPlay box issue. Replacement order #EX20240715-4471 has been created. Please provide your proof of purchase, we\'ll ship a replacement within 24 hours at no cost.'},
       {zh:'您好！信用卡被拒通常是发卡行的跨境交易安全拦截。建议：1)联系发卡行确认 2)尝试PayPal 3)使用其他卡片。我们支持多种支付方式。',orig:'Hi! Credit card decline is usually a cross-border fraud prevention block by your bank. Try: 1) Contact your bank 2) Use PayPal 3) Try another card. We support multiple payment methods.'},
       {zh:'您好！德国订单€150以下免税，但需缴纳19%增值税(VAT)。我们提供DDP完税服务，下单时可选，包裹直达无需清关。',orig:'Hello! Orders under €150 to Germany are duty-free, but 19% VAT applies. We offer DDP (Delivered Duty Paid) service at checkout for direct delivery without customs hassle.'},
       {zh:'尊敬的Gold会员，您享受免费Express配送（3-5天达）、专属客服、生日双倍积分等权益。已为您自动应用。',orig:'Dear Gold member, you enjoy free Express shipping (3-5 days), dedicated support, and birthday double points. Already applied to your order.'},
@@ -250,7 +250,7 @@ window.DataGen = {
     ],
     de:[
       {zh:'Hallo! Dieses Bluetooth-Headset Pro unterstützt aptX Adaptive Codec, Latenz 38ms, ideal für Gaming.',orig:'Hallo! Dieses Bluetooth-Headset Pro unterstützt aptX Adaptive Codec mit 38ms Latenz, ideal für Gaming. AAC/SBC ebenfalls unterstützt.'},
-      {zh:'Hallo! Die Smart Watch Series 7 hält mit Always-On 3 Tage, ohne 7 Tage. Magnet-Schnellladung in 2h.',orig:'Hallo! Die Smart Watch Series 7 hält mit Always-On-Display ca. 3 Tage, ohne ca. 7 Tage. Magnet-Schnellladung in 2 Stunden.'},
+      {zh:'Hallo! Der AI CarPlay Box Pro hält im Dauerbetrieb ca. 8 Stunden, im Standby 72 Stunden. PD-Schnellladung in 1,5h.',orig:'Hallo! Der AI CarPlay Box Pro hält im Dauerbetrieb ca. 8 Stunden, im Standby bis zu 72 Stunden. PD-Schnellladung in 1,5 Stunden.'},
       {zh:'Ihr Paket ist im internationalen Versand. Tracking-Updates können 3-5 Tage verzögert sein. Nicht verloren.',orig:'Ihr Paket befindet sich im internationalen Versand. Tracking-Updates können 3-5 Tage verzögert sein. Es ist nicht verloren. Ankunft in 2-3 Werktagen.'},
       {zh:'Kopfhörerfehler: Ersatzticket #EX20240715-4471 erstellt. Bitte Kaufbeleg senden, 24h kostenloser Ersatz.',orig:'Kopfhörer-Defekt: Ersatzticket #EX20240715-4471 erstellt. Bitte Kaufbeleg senden, 24h kostenloser Ersatz.'},
       {zh:'Kreditkartenablehnung meist Bank-Sicherheitssperre für Auslandstransaktionen. Bank kontaktieren oder PayPal.',orig:'Kreditkartenablehnung ist meist eine Banksperre für Auslandstransaktionen. Bitte Bank kontaktieren oder PayPal verwenden.'},
@@ -261,7 +261,7 @@ window.DataGen = {
     ],
     es:[
       {zh:'Hola! Este auricular Pro soporta aptX Adaptive, latencia 38ms, ideal para gaming.',orig:'Hola! Este auricular Pro soporta códec aptX Adaptive con latencia de 38ms, ideal para gaming. También AAC/SBC.'},
-      {zh:'Hola! El Smart Watch Series 7 dura 3 días con always-on, 7 días sin. Carga rápida 2h.',orig:'Hola! El Smart Watch Series 7 dura 3 días con pantalla siempre activa, 7 días sin. Carga magnética en 2h.'},
+      {zh:'Hola! El AI CarPlay Box Pro dura 8 horas en uso continuo, 72h en reposo. Carga rápida PD en 1,5h.',orig:'Hola! El AI CarPlay Box Pro dura 8 horas en uso continuo, 72h en reposo. Carga rápida PD en 1,5 horas.'},
       {zh:'Su paquete está en tránsito internacional. Actualizaciones pueden tardar 3-5 días. No está perdido.',orig:'Su paquete está en tránsito internacional. Las actualizaciones pueden tardar 3-5 días. No está perdido. Llegará en 2-3 días hábiles.'},
       {zh:'Fallo del auricular: ticket de reemplazo #EX20240715-4471. Envíe comprobante, reposición 24h gratis.',orig:'Fallo del auricular: ticket de reemplazo #EX20240715-4471. Envíe comprobante de compra, reposición gratuita en 24h.'},
       {zh:'Rechazo de tarjeta suele ser bloque de seguridad del banco. Contacte al banco o use PayPal.',orig:'El rechazo de tarjeta suele ser bloque de seguridad del banco para transacciones internacionales. Contacte al banco o use PayPal.'},
@@ -274,10 +274,10 @@ window.DataGen = {
   /* AI建议回复池：每语言8+条，含RAG引用标记 */
   aiSuggestions:{
     en:[
-      'Hello! I\'ve checked your order #AMZ20240715-88392. The Bluetooth Earphone Pro supports aptX Adaptive codec (38ms latency), perfect for gaming. It also supports AAC/SBC. Any other questions?',
-      'Hi! The Smart Watch Series 7 lasts 3 days with always-on display, 7 days without. It supports magnetic fast charging (2h full). Compatible with iOS 12+/Android 6+.',
+      'Hello! I\'ve checked your order #AMZ20240715-88392. The wireless CarPlay adapter supports iPhone 15 Pro Max, using Bluetooth 5.0 for stable connection. It also supports iOS 12+/Android. Any other questions?',
+      'Hi! The AI CarPlay Box Pro lasts 8 hours of continuous use, 72 hours in standby. It supports PD fast charging (1.5h full). Compatible with iOS 12+/Android 8+.',
       'I\'ve tracked your package (SF1893726405). It\'s in international transit; tracking updates may delay 3-5 days. Expected delivery in 2-3 business days. Not lost.',
-      'I\'m sorry about the earphone issue. I\'ve created replacement ticket #EX20240715-4471. Please provide proof of purchase, we\'ll ship a free replacement within 24 hours.',
+      'I\'m sorry about the CarPlay box issue. I\'ve created replacement ticket #EX20240715-4471. Please provide proof of purchase, we\'ll ship a free replacement within 24 hours.',
       'Credit card declines are usually cross-border fraud prevention by your bank. Try: 1) Contact your bank 2) Use PayPal 3) Try another card. All payments are PCI-DSS encrypted.',
       'For Germany, orders under €150 are duty-free but 19% VAT applies. We offer DDP service at checkout for hassle-free delivery. Customs invoice can be provided if needed.',
       'As a Gold member, you enjoy free Express shipping (3-5 days), dedicated support, and birthday double points. Already applied to your order automatically.',
@@ -295,7 +295,7 @@ window.DataGen = {
     ],
     de:[
       'Hallo! Bestellung #AMZ20240715-88392 geprüft. Das Headset Pro unterstützt aptX Adaptive (38ms), ideal für Gaming.',
-      'Smart Watch Series 7: 3 Tage mit Always-On, 7 Tage ohne. Magnetladung 2h. iOS 12+/Android 6+ kompatibel.',
+      'AI CarPlay Box Pro: 8 Stunden Dauerbetrieb, 72h Standby. PD-Schnellladung 1,5h. iOS 12+/Android 8+ kompatibel.',
       'Paket (SF1893726405) im internationalen Versand. Tracking verzögert 3-5 Tage. Ankunft in 2-3 Werktagen. Nicht verloren.',
       'Kopfhörer-Defekt: Ersatzticket #EX20240715-4471. Kaufbeleg senden, 24h kostenloser Ersatz.',
       'Kartenablehnung meist Banksicherheit. Bank kontaktieren, PayPal oder andere Karte. PCI-DSS verschlüsselt.',
@@ -305,7 +305,7 @@ window.DataGen = {
     ],
     es:[
       'Hola! Pedido #AMZ20240715-88392 verificado. Auricular Pro soporta aptX Adaptive (38ms), ideal para gaming.',
-      'Smart Watch Series 7: 3 días con always-on, 7 sin. Carga magnética 2h. iOS 12+/Android 6+.',
+      'AI CarPlay Box Pro: 8 horas uso continuo, 72h reposo. Carga rápida PD 1,5h. iOS 12+/Android 8+.',
       'Paquete (SF1893726405) en tránsito internacional. Seguimiento retrasa 3-5 días. Llegada 2-3 días hábiles.',
       'Fallo auricular: ticket #EX20240715-4471. Envíe comprobante, reemplazo gratis 24h.',
       'Rechazo tarjeta suele ser seguridad del banco. Contacte banco, PayPal u otra tarjeta. PCI-DSS.',

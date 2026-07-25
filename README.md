@@ -4,7 +4,9 @@
 
 覆盖欧美、东南亚 12 国 8 种语言，支持独立站 + 亚马逊等多平台会话统一接待，提供咨询、订单、售后、复购、人工转接 5 大核心智能体的全流程自动化编排。
 
-![系统演示](docs/images/demo.gif)
+![系统首页](docs/images/homepage.png)
+
+> 三栏工作台：左侧多平台会话列表（含业务阶段标签与未读红点）/ 中间实时聊天流（AI 建议回复）/ 右侧客户 360° 详情面板；顶部支持 Amazon、速卖通、eBay、独立站、乐天、邮件 6 大平台一键切换。
 
 ## 核心特性
 
@@ -45,45 +47,17 @@ multilang-cs-platform/
 
 ## 快速开始
 
-### 一、环境准备
-
 ```bash
-# 克隆项目
 git clone <repo-url>
 cd multilang-cs-platform
-
-# 复制环境变量
-cp .env.example .env
-```
-
-### 二、方式 A：Docker 一键启动（推荐）
-
-```bash
-docker-compose up -d
+cp .env.example .env          # Windows: copy .env.example .env
+pip install -r backend/requirements.txt
+python start.ps1              # 一键启动前后端
 ```
 
 启动完成后访问：http://localhost:8080
 
-### 三、方式 B：本地开发启动
-
-```bash
-# 1. 安装后端依赖
-cd backend
-pip install -r requirements.txt
-
-# 2. 启动后端服务
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-
-# 3. 启动前端（使用 serve.py，自动禁用浏览器缓存）
-cd ../frontend
-python serve.py 8080
-```
-
-访问：http://localhost:8080
-
-> **Windows 一键启动**：双击 `start.ps1` 或在 PowerShell 中执行 `.\start.ps1`，自动检测端口冲突、启动前后端服务。
->
-> 后端支持多种 LLM 后端：在 `.env` 中配置 `LLM_PROVIDER=deepseek` 并填入 `DEEPSEEK_API_KEY` 即可接入 DeepSeek API。也支持 vLLM / OpenAI / 通义千问 / 自定义。未配置任何 API 时自动回退至规则引擎模式。
+> 未配置 LLM API 时自动回退至规则引擎模式，全部前端功能可正常体验，无需 GPU 或外部服务。如需接入真实大模型，在 `.env` 中配置 `LLM_PROVIDER` 与对应 API Key 即可（支持 DeepSeek / vLLM / OpenAI / 通义千问）。
 
 ## 模型微调与量化
 
@@ -194,23 +168,20 @@ curl http://localhost:8000/api/stats
 
 返回实时运营指标，包括请求量、响应时延、Agent 分布、反幻觉通过率、人工转接率等，前端可视化大屏直接消费。
 
-## 安全配置
+## 后续优化方向
 
-### CORS 跨域策略
-
-生产环境通过环境变量配置允许的前端域名，严禁使用通配符：
-
-```bash
-# .env
-CORS_ALLOWED_ORIGINS=https://cs.example.com,https://admin.example.com
-```
-
-开发环境默认允许 `localhost:8080/5173/3000`，仅放行 `GET/POST/PUT/DELETE/OPTIONS` 方法和必要的请求头。
-
-### API 鉴权
-
-生产部署建议在反向代理层（Nginx / API Gateway）添加 JWT 或 API Key 鉴权，后端通过 `X-Request-ID` 头支持链路追踪。
+| 方向 | 规划 |
+|------|------|
+| **模型增强** | 引入 DPO 偏好对齐提升回复质量；评估 Qwen2.5-14B / Qwen3 系列基座；探索 RAG 与长上下文窗口的混合策略 |
+| **推理性能** | vLLM 连续批处理 + Prefix Cache 优化；模型 Speculative Decoding 加速；多 GPU 张量并行 |
+| **检索增强** | 引入 GraphRAG 知识图谱检索；多模态 RAG（商品图片理解）；自适应检索深度调节 |
+| **多智能体演进** | Agent 自主记忆与经验沉淀；基于反馈的协作策略在线学习；新增营销/复购智能体 |
+| **平台接入** | 对接 Amazon SP-API / 速卖通开放平台真实消息通道；Kafka 异步消息总线；Webhook 双向同步 |
+| **可观测性** | Jaeger 全链路追踪集成；Grafana 运营大屏；基于阈值的智能告警（响应延迟 / 反幻觉通过率 / 人工转接率） |
+| **工程化** | 多租户隔离与权限体系；灰度发布与 A/B 测试框架；模型版本管理与回滚机制 |
 
 ## License
 
-Apache License 2.0
+Apache License 2.0 + 非商用限制（详见 [LICENSE](LICENSE)）
+
+本项目开源供学习、研究与二次开发使用，**禁止商用**。如需商用授权，请联系版权人。
