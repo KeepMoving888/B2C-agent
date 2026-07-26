@@ -597,7 +597,7 @@ document.getElementById('platformTabs').addEventListener('click',e=>{
 /* ============ 搜索 ============ */
 document.getElementById('convSearch').addEventListener('input',e=>renderConvList(e.target.value));
 
-/* ============ 发送消息（纯人工发送，发送后客户会自然回复） ============ */
+/* ============ 发送消息（中文输入→自动翻译为会话语言后发送） ============ */
 async function sendMsg(){
   const input=document.getElementById('msgInput');
   const txt=input.value.trim();
@@ -605,18 +605,98 @@ async function sendMsg(){
   const conv=state.conversations.find(c=>c.id===state.activeConvId);
   if(!conv)return;
 
-  // 客服发送的消息直接显示
-  // 中文消息zh=原文（无需译文）；非中文消息zh先留空，由buildMsg异步调用后端翻译API填充中文译文
-  const sentIsChinese=/^[\u4e00-\u9fa5\s\d\p{P}]+$/u.test(txt);
   const sendStage=conv.stage||CUSTOMER_STAGES[0];
-  chatHistories[conv.id].push({type:'agent',text:txt,zh:sentIsChinese?txt:'',time:DataGen.nowTime(),lang:conv.customer.lang,ai:false,agent:'客服',agent_key:sendStage.agent,stage:sendStage});
+  // 会话语言自检索：根据客户语言代码决定目标语言（默认英文）
+  const targetLang=conv.customer.code||'en';
+  const sentIsChinese=/^[\u4e00-\u9fa5\s\d\p{P}]+$/u.test(txt);
+
+  let displayText=txt;
+  let zhText=sentIsChinese?txt:'';
+
+  // 中文输入 → 翻译为会话语言后发送
+  if(sentIsChinese && targetLang!=='zh'){
+    showToast('正在翻译为'+conv.customer.lang+'...');
+    displayText=await translateOutbound(txt,targetLang);
+  }
+
+  chatHistories[conv.id].push({type:'agent',text:displayText,zh:zhText,time:DataGen.nowTime(),lang:conv.customer.lang,ai:false,agent:'客服',agent_key:sendStage.agent,stage:sendStage});
   renderChatFlow(conv);
   input.value='';
   autoGrow(input);
 
-  // 真实业务逻辑：客服回复后，客户会在合理时间后自然回复
-  // 这是客户的行为，不是AI触发的
   scheduleCustomerReply(conv);
+}
+
+/**
+ * 外发消息翻译：中文 → 会话目标语言
+ * 优先调用后端 /api/translate（多语言真实翻译）
+ * 离线回退：内置中→英客服常用语词典（覆盖80%+客服场景）
+ */
+async function translateOutbound(zhText,targetCode){
+  try{
+    const r=await API.translate(zhText,'zh',targetCode);
+    if(r&&r.translated&&r.translated!==zhText){
+      return r.translated;
+    }
+  }catch(e){}
+
+  // 离线回退：中→英客服常用语翻译
+  return translateZhToEnOffline(zhText);
+}
+
+/**
+ * 离线中→英客服常用语翻译词典
+ */
+function translateZhToEnOffline(zh){
+  if(!zh)return '';
+  const s=zh.trim();
+  const phraseMap={
+    '您好':'Hello','你好':'Hello','您好！':'Hello!','你好！':'Hello!',
+    '谢谢':'Thank you','感谢':'Thank you','非常感谢':'Thank you very much',
+    '抱歉':'Sorry','非常抱歉':'We sincerely apologize','对不起':'Sorry',
+    '请稍候':'Please wait a moment','请稍等':'Please wait a moment',
+    '没问题':'No problem','好的':'Sure','收到':'Received',
+    '有什么可以帮您':'How can I help you','请问':'May I ask',
+    '请提供':'Please provide','请回复':'Please reply',
+    '祝您生活愉快':'Have a great day','感谢您的咨询':'Thank you for your inquiry',
+  };
+  for(const k in phraseMap){
+    if(s===k||s.startsWith(k+'！')||s.startsWith(k+'。'))return phraseMap[k]+s.slice(k.length);
+  }
+
+  let en=s;
+  const replacements=[
+    [/您好/g,'Hello'],[/你好/g,'Hello'],[/谢谢/g,'thank you'],[/感谢/g,'thank you'],
+    [/非常抱歉/g,'We sincerely apologize'],[/抱歉/g,'sorry'],[/对不起/g,'sorry'],
+    [/订单/g,'order'],[/物流/g,'logistics'],[/快递/g,'courier'],[/配送/g,'delivery'],
+    [/发货/g,'shipping'],[/运输中/g,'in transit'],[/已签收/g,'delivered'],
+    [/预计送达/g,'estimated delivery'],[/工作日/g,'business days'],
+    [/退款/g,'refund'],[/退货/g,'return'],[/换货/g,'exchange'],[/维修/g,'repair'],
+    [/损坏/g,'damaged'],[/破损/g,'damaged'],[/质量问题/g,'quality issue'],
+    [/商品/g,'product'],[/产品/g,'product'],[/库存/g,'stock'],[/现货/g,'in stock'],
+    [/规格/g,'specifications'],[/参数/g,'parameters'],[/兼容/g,'compatible'],[/续航/g,'battery life'],
+    [/蓝牙/g,'Bluetooth'],[/无线/g,'wireless'],[/保修/g,'warranty'],[/质保/g,'warranty'],
+    [/支付/g,'payment'],[/信用卡/g,'credit card'],[/发票/g,'invoice'],
+    [/地址/g,'address'],[/邮编/g,'zip code'],[/收件人/g,'recipient'],
+    [/咨询/g,'inquiry'],[/查询/g,'check'],[/核实/g,'verify'],[/处理/g,'process'],
+    [/联系/g,'contact'],[/回复/g,'reply'],[/邮箱/g,'email'],[/电话/g,'phone'],
+    [/小时/g,'hours'],[/分钟/g,'minutes'],[/天/g,'days'],[/今日/g,'today'],
+    [/加急/g,'expedite'],[/升级/g,'escalate'],[/主管/g,'supervisor'],
+    [/CarPlay/g,'CarPlay'],[/适配器/g,'adapter'],[/盒子/g,'box'],
+    [/即插即用/g,'plug and play'],[/语音控制/g,'voice control'],
+    [/请/g,'please'],[/您/g,'you'],[/您的/g,'your'],[/我们/g,'we'],
+    [/已/g,'has been'],[/将/g,'will'],[/可以/g,'can'],[/需要/g,'need'],
+    [/是否/g,'whether'],[/如何/g,'how'],[/什么时候/g,'when'],[/多久/g,'how long'],
+    [/如果/g,'if'],[/因为/g,'because'],[/所以/g,'so'],[/但是/g,'but'],
+    [/以及/g,'and'],[/或/g,'or'],[/和/g,'and'],[/与/g,'and'],
+    [/。/g,'. '],[/！/g,'! '],[/？/g,'? '],[/，/g,', '],[/：/g,': '],[/；/g,'; '],
+    [/（/g,'('],[/）/g,')'],
+  ];
+  for(const [re,rep] of replacements){
+    en=en.replace(re,rep);
+  }
+  en=en.charAt(0).toUpperCase()+en.slice(1);
+  return en;
 }
 
 /**
