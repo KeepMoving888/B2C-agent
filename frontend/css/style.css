@@ -444,3 +444,124 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none}
 
 /* 平台标签未读红点 */
 .pf-unread{display:inline-flex;align-items:center;justify-content:center;background:#ef4444;color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;padding:0 4px;margin-left:4px;vertical-align:middle}
+
+
+/* ============ 移动端响应式适配（比赛评审移动端访问优化） ============ */
+/* 平板 (<=1024px)：右侧详情面板收窄 */
+@media (max-width:1024px){
+  :root{--sidebar-w:240px;--detail-w:280px}
+  .main-grid{grid-template-columns:var(--sidebar-w) 1fr var(--detail-w)}
+}
+
+/* 小平板 (<=900px)：隐藏右侧详情面板，点击客户头像浮层展示 */
+@media (max-width:900px){
+  :root{--sidebar-w:220px;--detail-w:0}
+  .main-grid{grid-template-columns:var(--sidebar-w) 1fr}
+  .detail-panel{display:none}
+  .detail-panel.mobile-show{display:flex;position:fixed;top:0;right:0;bottom:0;width:90%;max-width:340px;z-index:1000;box-shadow:-4px 0 24px rgba(0,0,0,.15);background:#fff}
+}
+
+/* 手机 (<=640px)：单栏布局，会话列表可切换 */
+@media (max-width:640px){
+  :root{--sidebar-w:0;--detail-w:0}
+  .main-grid{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .sidebar.mobile-show{display:flex;position:fixed;top:0;left:0;bottom:0;width:85%;max-width:320px;z-index:1000;box-shadow:4px 0 24px rgba(0,0,0,.15);background:#fff}
+  /* 顶部平台切换栏横向滚动 */
+  .platform-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .platform-tabs .pf{flex:0 0 auto;min-width:80px}
+  /* 聊天气泡宽度调整 */
+  .msg{max-width:90%}
+  /* AI建议卡片全宽 */
+  .ai-suggestion-card{margin:8px 0}
+  /* 输入框区域固定底部 */
+  .msg-input-area{position:sticky;bottom:0;background:#fff;z-index:10}
+  /* 转人工通知全宽 */
+  .handoff-notification{left:12px;right:12px;max-width:none;top:auto;bottom:80px}
+  /* 移动端切换按钮 */
+  .mobile-toggle{display:inline-flex!important}
+}
+
+/* 移动端切换按钮（默认隐藏，手机端显示） */
+.mobile-toggle{display:none;position:fixed;top:12px;z-index:1100;width:40px;height:40px;border-radius:50%;background:var(--blue);color:#fff;border:none;box-shadow:0 2px 8px rgba(37,99,235,.3);align-items:center;justify-content:center;cursor:pointer;font-size:18px}
+.mobile-toggle.left{left:12px}
+.mobile-toggle.right{right:12px}
+.mobile-toggle:hover{transform:scale(1.05)}
+
+/* ============ 关键结论高亮增强（提升第一印象） ============ */
+/* AI 建议卡片关键结论放大 */
+.ai-suggestion-card .suggestion-text{
+  font-size:14px;
+  font-weight:500;
+  color:#0f172a;
+  background:linear-gradient(135deg,#f0f9ff,#e0f2fe);
+  border-left:4px solid #2563eb;
+  padding:10px 12px;
+  border-radius:8px;
+  box-shadow:0 1px 3px rgba(37,99,235,.08);
+}
+
+/* 转人工/投诉升级高亮（红色警示） */
+.handoff-notification .title{
+  font-size:15px;
+  font-weight:700;
+  color:#dc2626;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.handoff-notification .title::before{
+  content:'⚠';
+  font-size:18px;
+}
+
+/* 意图/Agent 标签强化 */
+.intent-tag,.agent-tag{
+  font-weight:600;
+  font-size:11px;
+  padding:3px 8px;
+  border-radius:10px;
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+}
+
+/* tooltip 悬停卡片优化（尺寸适中，文字清晰） */
+[data-tooltip]{
+  position:relative;
+}
+[data-tooltip]:hover::after{
+  content:attr(data-tooltip);
+  position:absolute;
+  bottom:calc(100% + 8px);
+  left:50%;
+  transform:translateX(-50%);
+  background:#1e293b;
+  color:#fff;
+  padding:6px 10px;
+  border-radius:6px;
+  font-size:12px;
+  line-height:1.4;
+  white-space:nowrap;
+  max-width:240px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
+  z-index:100;
+  pointer-events:none;
+}
+
+/* 交互按钮统一 SaaS 圆形风格 */
+.action-btn,.send-btn,.ai-suggest-btn,.cust-reply-btn{
+  border-radius:20px;
+  transition:all .2s ease;
+  font-weight:500;
+}
+.action-btn:hover,.send-btn:hover,.ai-suggest-btn:hover{
+  transform:translateY(-1px);
+}
+
+/* 数据对比色块（红涨/绿跌/黄警告） */
+.metric-up{color:#dc2626;font-weight:600}
+.metric-down{color:#059669;font-weight:600}
+.metric-warn{color:#d97706;font-weight:600}

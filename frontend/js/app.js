@@ -608,15 +608,19 @@ async function sendMsg(){
   const sendStage=conv.stage||CUSTOMER_STAGES[0];
   // 会话语言自检索：根据客户语言代码决定目标语言（默认英文）
   const targetLang=conv.customer.code||'en';
-  const sentIsChinese=/^[\u4e00-\u9fa5\s\d\p{P}]+$/u.test(txt);
+  // 判断是否包含中文（只要含中文字符即视为中文输入，需翻译）
+  // 不再要求整行都是中文，避免 CarPlay/Bluetooth/iOS 等英文词导致误判
+  const hasChinese=/[\u4e00-\u9fa5]/.test(txt);
 
   let displayText=txt;
-  let zhText=sentIsChinese?txt:'';
+  let zhText=hasChinese?txt:'';
 
   // 中文输入 → 翻译为会话语言后发送
-  if(sentIsChinese && targetLang!=='zh'){
+  if(hasChinese && targetLang!=='zh'){
     showToast('正在翻译为'+conv.customer.lang+'...');
     displayText=await translateOutbound(txt,targetLang);
+    // 翻译后的文本用于发送，中文原文保留在 zh 字段供客服侧查看
+    zhText=txt;
   }
 
   chatHistories[conv.id].push({type:'agent',text:displayText,zh:zhText,time:DataGen.nowTime(),lang:conv.customer.lang,ai:false,agent:'客服',agent_key:sendStage.agent,stage:sendStage});
@@ -1132,34 +1136,48 @@ function autoFillSuggestion(result,conv){
   }catch(e){console.log('[AI建议] 自动填入失败:',e)}
 }
 
-// 采纳：填入输入框，人工确认后发送
-function adoptSuggestion(cardId,convId){
+// 采纳：填入输入框，人工确认后发送（客户语言非中文时自动翻译）
+async function adoptSuggestion(cardId,convId){
   const text=document.getElementById('sugText-'+cardId);
   if(!text)return;
   const input=document.getElementById('msgInput');
-  // 如果客户语言非中文，优先填入目标语言版本；无翻译时填入中文
   const conv=state.conversations.find(c=>c.id===convId);
+  const zhText=text.textContent||'';
+
   if(conv&&conv.customer.code!=='zh'){
-    const mutedText=text.parentElement.querySelector('.suggestion-text.muted');
-    input.value=mutedText?mutedText.textContent:text.textContent;
+    // 客户语言非中文：调用翻译后填入目标语言版本
+    showToast('正在翻译为'+conv.customer.lang+'...');
+    const translated=await translateOutbound(zhText,conv.customer.code);
+    input.value=translated;
+    showToast('已填入翻译后的AI建议，请审核后点击发送');
   }else{
-    input.value=text.textContent;
+    input.value=zhText;
+    showToast('已填入AI建议，请审核后点击发送');
   }
   autoGrow(input);
   document.getElementById(cardId).remove();
-  showToast('已填入AI建议，请审核后点击发送');
   input.focus();
 }
 
-// 编辑：填入输入框供人工编辑
-function editSuggestion(cardId,convId){
+// 编辑：填入输入框供人工编辑（客户语言非中文时自动翻译）
+async function editSuggestion(cardId,convId){
   const text=document.getElementById('sugText-'+cardId);
   if(!text)return;
   const input=document.getElementById('msgInput');
-  input.value=text.textContent;
+  const conv=state.conversations.find(c=>c.id===convId);
+  const zhText=text.textContent||'';
+
+  if(conv&&conv.customer.code!=='zh'){
+    showToast('正在翻译为'+conv.customer.lang+'...');
+    const translated=await translateOutbound(zhText,conv.customer.code);
+    input.value=translated;
+    showToast('已填入翻译后内容，可编辑后发送');
+  }else{
+    input.value=zhText;
+    showToast('已填入输入框，可编辑后发送');
+  }
   autoGrow(input);
   document.getElementById(cardId).remove();
-  showToast('已填入输入框，可编辑后发送');
   input.focus();
 }
 
