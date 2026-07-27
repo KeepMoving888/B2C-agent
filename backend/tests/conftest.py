@@ -7,6 +7,15 @@ _backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _backend_dir not in sys.path:
     sys.path.insert(0, _backend_dir)
 
+# ===== CI / 测试环境：强制禁用 LLM 与外部服务 =====
+# 确保测试在规则引擎模式下运行，结果可复现
+os.environ.setdefault("LLM_PROVIDER", "rule")
+os.environ.setdefault("VLLM_BASE_URL", "")
+os.environ.setdefault("DEEPSEEK_API_KEY", "")
+os.environ.setdefault("OPENAI_API_KEY", "")
+os.environ.setdefault("MILVUS_HOST", "127.0.0.1")
+os.environ.setdefault("MILVUS_PORT", "19999")
+
 import pytest
 
 

@@ -1,0 +1,20 @@
+# CI 环境依赖（精简版，不含 GPU/训练/重型基础设施）
+# 用于 GitHub Actions CI，避免无 GPU 环境安装 bitsandbytes/autoawq 失败
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+python-dotenv==1.0.0
+langgraph==0.0.40
+langchain==0.1.0
+langchain-core==0.1.10
+langchain-community==0.0.16
+langchain-openai==0.0.5
+openai==1.12.0
+numpy==1.26.3
+httpx==0.26.0
+loguru==0.7.2
+orjson==3.9.13
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.23.0
