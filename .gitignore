@@ -42,3 +42,8 @@ deployment/milvus/volumes/
 
 # 构建产物
 frontend/dist/
+
+# 测试覆盖率产物
+.coverage
+coverage.xml
+htmlcov/
