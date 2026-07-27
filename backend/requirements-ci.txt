@@ -1,6 +1,6 @@
 # CI minimal deps (no GPU/training/langchain packages)
-# langgraph/langchain not needed: py_compile checks syntax only,
-# tests use rule engine and don't import graph.py
+# langgraph not needed: app/agents/__init__.py uses optional import for graph module
+# py_compile checks syntax only; tests use rule engine and don't trigger graph.py
 fastapi==0.109.0
 uvicorn[standard]==0.27.0
 pydantic==2.5.3

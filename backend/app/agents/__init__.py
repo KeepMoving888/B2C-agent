@@ -32,7 +32,14 @@ from .collaboration import (
 )
 from .agent_base import AgentBase
 from .router import initial_route, route_after_agent, route_desc
-from .graph import build_graph, get_graph, run_graph
+
+# graph 模块依赖 langgraph，仅在运行时需要。
+# CI / 测试环境（rule 引擎模式）无需 langgraph，故采用可选导入。
+try:
+    from .graph import build_graph, get_graph, run_graph
+    _GRAPH_AVAILABLE = True
+except ImportError:
+    _GRAPH_AVAILABLE = False
 
 __all__ = [
     # 状态
@@ -47,6 +54,7 @@ __all__ = [
     "AgentBase",
     # 路由
     "initial_route", "route_after_agent", "route_desc",
-    # 图
-    "build_graph", "get_graph", "run_graph",
 ]
+
+if _GRAPH_AVAILABLE:
+    __all__ += ["build_graph", "get_graph", "run_graph"]
