@@ -110,8 +110,11 @@ def get_cached_knowledge(query_hash: str) -> Optional[list]:
         return None
 
 
-def check_rate_limit(user_id: str, max_qps: int = 10, window: int = 1) -> bool:
-    """滑动窗口限流
+def check_rate_limit(user_id: str, max_qps: int = 5, window: int = 1) -> bool:
+    """滑动窗口限流（QPS 机制）
+
+    每秒允许 max_qps 次请求，超过则限流。
+    生产环境建议：单用户 5 QPS，全局 50 QPS。
 
     Returns:
         True 允许通过，False 被限流

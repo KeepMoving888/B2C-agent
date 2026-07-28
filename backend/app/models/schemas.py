@@ -45,6 +45,7 @@ class SuggestRequest(BaseModel):
 class SuggestResponse(BaseModel):
     """AI建议回复响应"""
     text: str
+    reply_zh: str = ""
 
 
 class TranslateRequest(BaseModel):

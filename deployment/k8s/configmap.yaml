@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cs-config
+  namespace: cs-platform
+data:
+  BACKEND_HOST: "0.0.0.0"
+  BACKEND_PORT: "8000"
+  LLM_PROVIDER: "deepseek"
+  DEEPSEEK_MODEL: "deepseek-v4-flash"
+  MILVUS_HOST: "milvus.cs-platform.svc.cluster.local"
+  MILVUS_PORT: "19530"
+  REDIS_HOST: "redis.cs-platform.svc.cluster.local"
+  REDIS_PORT: "6379"
+  POSTGRES_HOST: "postgres.cs-platform.svc.cluster.local"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "cs_platform"
+  POSTGRES_USER: "cs_admin"
+  ES_HOST: "elasticsearch.cs-platform.svc.cluster.local"
+  ES_PORT: "9200"
+  KAFKA_BOOTSTRAP_SERVERS: "kafka.cs-platform.svc.cluster.local:9092"
+  JAEGER_AGENT_HOST: "jaeger-agent.cs-platform.svc.cluster.local"
+  JAEGER_AGENT_PORT: "6831"
+  AUTO_BUILD_INDEX: "true"
+  SUPPORTED_LANGUAGES: "en,ja,de,es,fr,it,pt,zh"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cs-secrets
+  namespace: cs-platform
+type: Opaque
+stringData:
+  DEEPSEEK_API_KEY: "your-api-key-here"
+  POSTGRES_PASSWORD: "cs_dev_pass"
+  REDIS_PASSWORD: ""

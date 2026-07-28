@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cs-frontend
+  namespace: cs-platform
+  labels:
+    app: cs-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cs-frontend
+  template:
+    metadata:
+      labels:
+        app: cs-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: frontend-content
+              mountPath: /usr/share/nginx/html
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+      volumes:
+        - name: frontend-content
+          hostPath:
+            path: /data/cs-platform/frontend
+            type: Directory
+        - name: nginx-config
+          hostPath:
+            path: /data/cs-platform/nginx.conf
+            type: File
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cs-frontend
+  namespace: cs-platform
+spec:
+  selector:
+    app: cs-frontend
+  ports:
+    - port: 80
+      targetPort: 80

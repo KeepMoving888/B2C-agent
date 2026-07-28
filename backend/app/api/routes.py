@@ -144,18 +144,19 @@ async def chat(req: ChatRequest):
 
 @router.post("/suggest", response_model=SuggestResponse)
 async def suggest(req: SuggestRequest):
-    """AI 建议回复"""
+    """AI 建议回复（始终生成中文，由前端按目标语言翻译）"""
     history = [m.model_dump() for m in req.history]
 
     if is_vllm_available():
-        messages = build_suggest_prompt(req.lang, req.platform, history)
+        # 始终用中文生成建议，确保前端可按目标语言翻译
+        messages = build_suggest_prompt("zh", req.platform, history)
         text = chat_completion(messages, temperature=0.7, max_tokens=200)
         if text:
-            return SuggestResponse(text=text)
+            return SuggestResponse(text=text, reply_zh=text)
 
-    # 离线回退
-    text = _fallback_suggest(req.lang)
-    return SuggestResponse(text=text)
+    # 离线回退：返回中文建议
+    text = _fallback_suggest("zh")
+    return SuggestResponse(text=text, reply_zh=text)
 
 
 @router.post("/translate", response_model=TranslateResponse)

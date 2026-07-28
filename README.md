@@ -162,11 +162,77 @@ docker-compose up -d
 | 微服务部署 | 日请求 > 10万，独立扩缩容 | `docker-compose -f deploy/docker-compose.microservices.yml up -d` |
 | Kubernetes | 大规模生产，多集群高可用 | `kubectl apply -f deploy/k8s/` |
 
+#### Kubernetes 部署
+
+生产环境推荐 K8s 部署，支持自动扩缩容、滚动更新与自愈能力。
+
+**部署清单**（位于 `deployment/k8s/`）：
+
+| 文件 | 用途 |
+|------|------|
+| `namespace.yaml` | 命名空间创建 |
+| `configmap.yaml` | 配置项与密钥管理 |
+| `backend-deployment.yaml` | 后端服务 Deployment + Service |
+| `frontend-deployment.yaml` | 前端 Nginx Deployment + Service |
+| `infrastructure.yaml` | Redis/PostgreSQL/Elasticsearch 部署 |
+| `ingress.yaml` | Nginx Ingress 路由配置 |
+
+**部署步骤**：
+
+```bash
+# 1. 创建命名空间
+kubectl apply -f deployment/k8s/namespace.yaml
+
+# 2. 创建配置与密钥（修改 Secret 中的 API Key）
+kubectl apply -f deployment/k8s/configmap.yaml
+
+# 3. 部署基础设施
+kubectl apply -f deployment/k8s/infrastructure.yaml
+
+# 4. 构建并推送后端镜像
+docker build -t cs-backend:latest -f deployment/docker/backend.Dockerfile backend/
+docker tag cs-backend:latest <registry>/cs-backend:latest
+docker push <registry>/cs-backend:latest
+
+# 5. 部署后端与前端
+kubectl apply -f deployment/k8s/backend-deployment.yaml
+kubectl apply -f deployment/k8s/frontend-deployment.yaml
+
+# 6. 配置 Ingress（修改 host 域名）
+kubectl apply -f deployment/k8s/ingress.yaml
+
+# 7. 验证部署
+kubectl get pods -n cs-platform
+kubectl get svc -n cs-platform
+kubectl get ingress -n cs-platform
+```
+
+**扩缩容**：
+
+```bash
+# 后端水平扩容到 4 副本
+kubectl scale deployment cs-backend -n cs-platform --replicas=4
+
+# 基于 CPU 自动扩缩容
+kubectl autoscale deployment cs-backend -n cs-platform \
+  --min=2 --max=10 --cpu-percent=70
+```
+
+**滚动更新**：
+
+```bash
+# 更新镜像触发滚动更新
+kubectl set image deployment/cs-backend backend=<registry>/cs-backend:v2 -n cs-platform
+
+# 查看滚动更新状态
+kubectl rollout status deployment/cs-backend -n cs-platform
+```
+
 #### 弹性设计
 
 - **全链路降级**：任一基础设施故障（Milvus/ES/PG/Redis/Kafka/LLM）自动回退，核心功能不中断
 - **熔断**：连续 5 次失败 → 熔断 30s → 半开探测
-- **限流**：Redis 分布式限流，单 IP 100 QPM，全局 1000 QPM
+- **限流**：Redis 分布式限流（QPS 机制），单 IP 5 QPS，全局 50 QPS
 - **超时**：Agent 编排 30s，RAG 5s，翻译 10s，LLM 15s
 
 #### 演进路径
