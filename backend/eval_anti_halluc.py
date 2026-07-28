@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from app.rag.retriever import retrieve
 from app.rag.anti_hallucination import AntiHallucinationChecker
 from app.services.llm_service import chat_completion, is_vllm_available
-from app.rag.prompts import build_suggest_prompt
+from app.rag.prompts import build_cot_prompt
 
 # 测试用例：包含易产生幻觉的场景（数字/政策/规格）
 TEST_CASES = [
@@ -82,9 +82,9 @@ def generate_reply_with_rag(query, lang, intent, enable_anti_halluc=True):
     sources = [{"id": d.get("id", ""), "content": d.get("content", "")[:100], "score": d.get("score", 0)} for d in docs]
 
     context = "\n".join([d.get("content", "") for d in docs])
-    prompt = build_suggest_prompt(query, context, intent, lang)
+    messages = build_cot_prompt(message=query, lang=lang, history=[], context=context)
 
-    reply = chat_completion(prompt, max_tokens=300, temperature=0.3)
+    reply = chat_completion(messages, max_tokens=300, temperature=0.3)
 
     anti_halluc_report = None
     if enable_anti_halluc and docs:

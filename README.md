@@ -124,18 +124,84 @@ docker-compose up -d
 
 ### 微服务部署
 
-系统支持按业务规模平滑演进为微服务架构，详见 [微服务部署方案设计](docs/microservices.md)。
+系统采用模块化单体（Modular Monolith）架构，模块边界清晰，可按业务规模平滑演进为微服务。详见 [微服务部署方案设计](docs/microservices.md)。
 
-服务拆分概览：
+#### 服务拆分
 
-| 服务 | 职责 | 端口 |
-|------|------|------|
-| cs-gateway | API 网关 / 限流 / TLS | 80 |
-| cs-chat | 会话管理 / WebSocket | 8001 |
-| cs-agent | 多智能体编排 | 8002 |
-| cs-rag | 知识库检索 | 8003 |
-| cs-translate | 多语言翻译 | 8004 |
-| cs-worker | 异步任务（Celery） | - |
+| 服务 | 职责 | 端口 | 技术栈 | 可独立部署 |
+|------|------|------|--------|-----------|
+| cs-gateway | API 网关 / 路由分发 / 限流 / TLS 终止 | 80 | Nginx | ✅ |
+| cs-chat | 会话管理 / WebSocket 推送 / 消息收发 | 8001 | FastAPI | ✅ |
+| cs-agent | 多智能体编排（LangGraph 状态图） | 8002 | FastAPI + LangGraph | ✅ |
+| cs-rag | 知识库检索（向量+BM25+ES 三路融合） | 8003 | FastAPI + Milvus | ✅ |
+| cs-translate | 多语言翻译（DeepSeek/LLM） | 8004 | FastAPI | ✅ |
+| cs-worker | 异步任务（索引构建 / 报表 / 通知） | - | Celery + Redis | ✅ |
+
+#### 服务间通信
+
+- **同步调用**：cs-chat → cs-agent → cs-rag / cs-translate（HTTP，超时 5-30s）
+- **异步消息**：Kafka Topics（customer-messages / agent-replies / human-handoff / rag-eval-events）
+- **服务发现**：开发环境用 .env 配置，K8s 环境用 CoreDNS + Service
+
+#### 数据存储分配
+
+| 存储组件 | 使用服务 | 用途 |
+|---------|---------|------|
+| Milvus | cs-rag | 向量索引（语义检索） |
+| Elasticsearch | cs-rag | BM25 稀疏检索（跨语言关键词） |
+| PostgreSQL | cs-chat, cs-agent | 会话记录 / 订单 / 转交事件 |
+| Redis | cs-chat, cs-worker | 会话状态缓存 / Celery broker |
+| Kafka | 全部 | 异步消息总线 |
+
+#### 部署形态对比
+
+| 形态 | 适用场景 | 启动命令 |
+|------|---------|---------|
+| 单体部署 | 日请求 < 10万，开发与小规模 | `python main.py` |
+| Docker Compose | 全栈一键启动（含基础设施） | `docker-compose up -d` |
+| 微服务部署 | 日请求 > 10万，独立扩缩容 | `docker-compose -f deploy/docker-compose.microservices.yml up -d` |
+| Kubernetes | 大规模生产，多集群高可用 | `kubectl apply -f deploy/k8s/` |
+
+#### 弹性设计
+
+- **全链路降级**：任一基础设施故障（Milvus/ES/PG/Redis/Kafka/LLM）自动回退，核心功能不中断
+- **熔断**：连续 5 次失败 → 熔断 30s → 半开探测
+- **限流**：Redis 分布式限流，单 IP 100 QPM，全局 1000 QPM
+- **超时**：Agent 编排 30s，RAG 5s，翻译 10s，LLM 15s
+
+#### 演进路径
+
+```
+阶段1: 单体部署（当前，日请求 < 5万）
+  ↓ 检索压力增大
+阶段2: RAG 服务独立部署（检索压力分离）
+  ↓ 编排计算压力增大
+阶段3: Agent 编排独立部署（计算压力分离）
+  ↓ 多团队协作需求
+阶段4: 全微服务 + K8s（按服务独立扩缩容）
+```
+
+#### 健康检查与可观测性
+
+每个微服务暴露 `/health` 端点，聚合基础设施状态：
+
+```json
+{
+  "status": "ok",
+  "mode": "deepseek",
+  "infrastructure": {
+    "redis": {"available": true},
+    "postgres": {"available": true},
+    "elasticsearch": {"available": false},
+    "kafka": {"available": false},
+    "jaeger": {"available": false}
+  }
+}
+```
+
+- **Metrics**：Prometheus 采集 + Grafana 可视化（QPS / 延迟 / 错误率 / RAG 召回率）
+- **Tracing**：Jaeger 全链路追踪（消息接入 → 意图识别 → RAG → Agent → 翻译）
+- **Logging**：Loguru 结构化日志，按 trace_id 串联
 
 ## 模型微调与量化
 
