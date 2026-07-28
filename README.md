@@ -11,11 +11,12 @@
 ## 核心特性
 
 - **多智能体协作链**：基于 LangGraph 构建 5 大核心智能体，通过能力边界检测 + 转交上下文 + retry/rollback 形成协作升级链（咨询→订单→售后→人工），全程 trace 可追溯
-- **RAG 质量评估 + 反幻觉**：混合检索（向量 + BM25 + RRF 融合）+ Cross-Encoder 重排序；Recall@K/MRR/NDCG 学术指标量化检索质量；三层反幻觉防护（引用溯源 + 置信度阈值 + 答案一致性校验）
+- **RAG 质量评估 + 反幻觉**：混合检索（向量 + BM25 + ES 三路 RRF 融合）+ Cross-Encoder 重排序；Recall@K/MRR/NDCG 学术指标量化检索质量；三层反幻觉防护（引用溯源 + 置信度阈值 + 答案一致性校验）
 - **模型微调与量化**：Qwen2.5-7B QLoRA 4-bit 量化微调；BLEU/ROUGE/五维质量评分量化微调收益；AWQ 量化部署
-- **高并发推理**：基于 vLLM 实现高并发推理部署
-- **多语言实时翻译**：8 种语言实时互译，客服中文输入自动翻译为目标语言
+- **高并发推理**：基于 vLLM 实现高并发推理部署，支持 PagedAttention + Continuous Batching
+- **多语言实时翻译**：8 种语言实时互译，DeepSeek LLM 驱动，LRU 缓存降低重复调用延迟
 - **AI 辅助能力**：情感分析（分级关键词 + 强度修饰词）、意图识别、智能建议回复
+- **企业级集成**：Redis 缓存 / PostgreSQL 持久化 / Elasticsearch 检索 / Kafka 消息接入 / Jaeger 链路追踪 / Celery 异步任务，全链路降级保证核心功能可用
 
 ## 技术栈
 
@@ -25,39 +26,116 @@
 | 后端 | Python 3.10+ / FastAPI / LangGraph / LangChain |
 | 向量库 | Milvus 2.x（支持混合检索） |
 | 模型 | Qwen2.5-7B（基座）/ QLoRA 4-bit 微调 / AWQ 量化 |
-| 推理 | vLLM（高并发批处理推理） |
-| 部署 | Docker / Docker Compose 一键启动 |
+| 推理 | vLLM（高并发批处理推理）/ DeepSeek API（云端 LLM） |
+| 基础设施 | Redis / PostgreSQL / Elasticsearch / Kafka / Jaeger / Celery |
+| 部署 | Docker / Docker Compose / 微服务 / Kubernetes |
 
 ## 项目结构
 
 ```
-multilang-cs-platform/
-├── frontend/              # 前端单页应用
+B2C-agent-repo/
+├── main.py                # 统一启动入口（python main.py）
 ├── backend/               # FastAPI 后端 + LangGraph 多智能体
 │   └── app/
 │       ├── api/           # REST + WebSocket 接口
-│       ├── agents/        # 5 大核心智能体
-│       ├── rag/           # RAG 检索增强链路
-│       ├── services/      # LLM/翻译/情感/意图服务
+│       ├── agents/        # 5 大核心智能体 + 协作状态图
+│       ├── rag/           # RAG 检索增强链路（向量+BM25+ES 三路融合）
+│       ├── services/      # LLM/翻译/情感/意图 + Redis/PG/ES/Kafka/Jaeger/Celery
 │       └── data/          # 内置多语言知识库
+├── frontend/              # 前端单页应用
 ├── training/              # QLoRA 微调 + AWQ 量化脚本
 ├── deployment/            # Docker + vLLM + Milvus 部署配置
+├── docs/                  # 架构文档 + 微服务部署方案
+│   └── microservices.md   # 微服务部署设计
+├── monitoring/            # Prometheus 监控配置
+├── docker-compose.yml     # 一键启动全部基础设施
 └── scripts/               # 环境初始化与启动脚本
 ```
 
 ## 快速开始
 
+### 1. 环境准备
+
 ```bash
 git clone <repo-url>
-cd multilang-cs-platform
+cd B2C-agent-repo
 cp .env.example .env          # Windows: copy .env.example .env
 pip install -r backend/requirements.txt
-python start.ps1              # 一键启动前后端
 ```
 
-启动完成后访问：http://localhost:8080
+### 2. 配置 LLM（可选）
 
-> 未配置 LLM API 时自动回退至规则引擎模式，全部前端功能可正常体验，无需 GPU 或外部服务。如需接入真实大模型，在 `.env` 中配置 `LLM_PROVIDER` 与对应 API Key 即可（支持 DeepSeek / vLLM / OpenAI / 通义千问）。
+在 `.env` 中配置任一 LLM Provider 即可接入真实大模型：
+
+```bash
+# DeepSeek（推荐，开箱即用）
+LLM_PROVIDER=deepseek
+DEEPSEEK_API_KEY=your-api-key
+DEEPSEEK_MODEL=deepseek-v4-flash
+
+# 或 vLLM 本地部署
+LLM_PROVIDER=vllm
+VLLM_BASE_URL=http://localhost:8001/v1
+
+# 或 OpenAI / 通义千问
+LLM_PROVIDER=openai    # 或 qwen
+OPENAI_API_KEY=your-key
+```
+
+> 未配置 LLM 时自动回退至规则引擎模式，全部前端功能可正常体验，无需 GPU 或外部服务。
+
+### 3. 启动服务
+
+```bash
+# 方式一：统一入口（推荐）
+python main.py                    # 启动后端（8000）+ 前端（8080）
+python main.py --backend          # 仅后端
+python main.py --port 9000        # 指定端口
+
+# 方式二：PowerShell 一键脚本
+.\start.ps1
+
+# 方式三：Docker Compose（含全部基础设施）
+docker-compose up -d
+```
+
+启动完成后访问：
+- 前端界面：http://localhost:8080
+- 后端 API 文档：http://localhost:8000/docs
+- 健康检查：http://localhost:8000/health
+
+## 部署方案
+
+### 单体部署（默认）
+
+适合开发与小规模场景，单进程启动全部功能：
+
+```bash
+python main.py
+```
+
+### Docker Compose 部署
+
+一键启动后端 + 前端 + 全部基础设施（Milvus/Redis/PG/ES/Kafka/Jaeger/Prometheus/Grafana）：
+
+```bash
+docker-compose up -d
+```
+
+### 微服务部署
+
+系统支持按业务规模平滑演进为微服务架构，详见 [微服务部署方案设计](docs/microservices.md)。
+
+服务拆分概览：
+
+| 服务 | 职责 | 端口 |
+|------|------|------|
+| cs-gateway | API 网关 / 限流 / TLS | 80 |
+| cs-chat | 会话管理 / WebSocket | 8001 |
+| cs-agent | 多智能体编排 | 8002 |
+| cs-rag | 知识库检索 | 8003 |
+| cs-translate | 多语言翻译 | 8004 |
+| cs-worker | 异步任务（Celery） | - |
 
 ## 模型微调与量化
 
@@ -159,6 +237,14 @@ curl http://localhost:8000/metrics
 | `cs_anti_hallucination_pass_rate` | 反幻觉通过率 |
 | `cs_handoff_rate` | 人工转接率 |
 | `cs_negative_sentiment_count` | 负面情感计数 |
+
+### 健康检查
+
+```bash
+curl http://localhost:8000/health
+```
+
+返回后端模式与全部基础设施状态（Redis/PostgreSQL/Elasticsearch/Kafka/Jaeger）。
 
 ### 统计面板
 

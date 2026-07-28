@@ -2,11 +2,19 @@
 
 基于大模型实现 8 种语言互译。
 vLLM 不可用时回退至内置关键词翻译表。
+内置 LRU 缓存，相同文本重复翻译时复用结果，降低 API 调用延迟。
 """
 import re
+import time
+from collections import OrderedDict
 from loguru import logger
 
 from app.services.llm_service import chat_completion, is_vllm_available
+
+# LLM 翻译结果缓存（LRU，最多 512 条，TTL 1 小时）
+_TRANSLATE_CACHE: OrderedDict = OrderedDict()
+_CACHE_MAX_SIZE = 512
+_CACHE_TTL = 3600  # 秒
 
 # 语言码 → 名称
 LANG_NAMES = {
@@ -49,7 +57,18 @@ def translate(text: str, from_lang: str = "zh", to_lang: str = "en") -> str:
 
 
 def _llm_translate(text: str, from_lang: str, to_lang: str) -> str:
-    """基于大模型的翻译"""
+    """基于大模型的翻译（带 LRU 缓存）"""
+    # 缓存命中检查
+    cache_key = f"{from_lang}:{to_lang}:{text}"
+    now = time.time()
+    if cache_key in _TRANSLATE_CACHE:
+        entry = _TRANSLATE_CACHE[cache_key]
+        if now - entry["ts"] < _CACHE_TTL:
+            _TRANSLATE_CACHE.move_to_end(cache_key)
+            return entry["text"]
+        else:
+            _TRANSLATE_CACHE.pop(cache_key)
+
     src = LANG_NAMES.get(from_lang, from_lang)
     dst = LANG_NAMES.get(to_lang, to_lang)
     messages = [
@@ -58,6 +77,10 @@ def _llm_translate(text: str, from_lang: str, to_lang: str) -> str:
     ]
     result = chat_completion(messages, temperature=0.3, max_tokens=512)
     if result:
+        # 写入缓存
+        _TRANSLATE_CACHE[cache_key] = {"text": result, "ts": now}
+        if len(_TRANSLATE_CACHE) > _CACHE_MAX_SIZE:
+            _TRANSLATE_CACHE.popitem(last=False)
         return result
     # 失败回退
     return _keyword_translate(text, from_lang, to_lang)

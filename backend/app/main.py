@@ -43,6 +43,14 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"状态图预热跳过: {e}")
 
+    # 预热重排序模型（避免首次请求延迟 10-20 秒）
+    try:
+        from app.rag.reranker import _get_reranker
+        _get_reranker()
+        logger.info("重排序模型预热完成")
+    except Exception as e:
+        logger.warning(f"重排序模型预热跳过: {e}")
+
     logger.info("系统启动完成")
     yield
     logger.info("系统关闭")

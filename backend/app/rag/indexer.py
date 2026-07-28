@@ -35,7 +35,8 @@ def _check_milvus() -> bool:
         return True
     try:
         from pymilvus import connections, utility
-        connections.connect(host=settings.milvus_host, port=str(settings.milvus_port))
+        # 连接超时 2 秒，不可用时快速降级至内存检索
+        connections.connect(host=settings.milvus_host, port=str(settings.milvus_port), timeout=2)
         _milvus_available = True
         logger.info(f"Milvus 已连接: {settings.milvus_host}:{settings.milvus_port}")
         return True

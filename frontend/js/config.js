@@ -4,10 +4,10 @@
  * - 自动探测后端可用性，失败则回退至离线模式
  */
 window.AppConfig = {
-  // 后端 API 地址
-  API_BASE: '',  // 同源访问（前端由后端 8000 端口提供）
+  // 后端 API 地址（前后端分离部署，后端 8000 端口）
+  API_BASE: 'http://localhost:8000',
   // WebSocket 地址（实时会话推送）
-  WS_BASE: 'ws://localhost:8090/ws',
+  WS_BASE: 'ws://localhost:8000/ws',
   // 后端健康检测超时（毫秒）- 后端启动时需探测DeepSeek API，需较长超时
   HEALTH_TIMEOUT: 10000,
   // 是否已连接后端（运行时动态设置）
