@@ -35,7 +35,7 @@ def _init():
         resource = Resource.create({"service.name": settings.jaeger_service_name})
         provider = TracerProvider(resource=resource)
         exporter = OTLPSpanExporter(
-            endpoint=f"{settings.jaeger_agent_host}:{settings.jaeger_agent_port}",
+            endpoint=f"http://{settings.jaeger_agent_host}:{settings.jaeger_agent_port}",
             insecure=True,
         )
         provider.add_span_processor(BatchSpanProcessor(exporter))

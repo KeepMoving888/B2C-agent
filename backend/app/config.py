@@ -130,7 +130,7 @@ class Settings(BaseSettings):
     # 每个 Agent 调用节点可可视化定位路由瓶颈，trace 覆盖：
     # 消息接入 → 意图识别 → RAG检索 → Agent路由 → 回复生成 → 翻译输出
     jaeger_agent_host: str = "localhost"
-    jaeger_agent_port: int = 6831
+    jaeger_agent_port: int = 4317  # OTLP gRPC 端口
     jaeger_service_name: str = "cs-agent-platform"
     jafer_sampling_rate: float = 1.0  # 采样率（生产环境建议 0.1）
 

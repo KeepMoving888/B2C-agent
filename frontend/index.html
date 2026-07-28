@@ -9,6 +9,14 @@
 <body>
   <!-- Top Nav -->
   <div class="topbar">
+    <!-- 移动端切换按钮（CSS 控制 mobile-show 时显示） -->
+    <button class="mobile-toggle mobile-toggle-left" aria-label="会话列表">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+    </button>
     <div class="logo"><div class="mark">客</div>多语言多平台智能客服系统</div>
     <div class="platform-tabs" id="platformTabs">
       <div class="tab active" data-pf="amazon">Amazon<span class="pf-unread" id="unread-amazon" style="display:none">0</span></div>
@@ -19,6 +27,12 @@
       <div class="tab" data-pf="email">邮件<span class="pf-unread" id="unread-email" style="display:none">0</span></div>
     </div>
     <div class="spacer"></div>
+    <button class="mobile-toggle mobile-toggle-right" aria-label="客户详情">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+        </svg>
+    </button>
     <div class="mode-switch" id="modeSwitch" title="切换推理后端">
       <span class="mode-dot" id="modeDot"></span><span id="modeLabel">连接中</span>
     </div>

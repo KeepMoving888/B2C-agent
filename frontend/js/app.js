@@ -1470,3 +1470,51 @@ function initPlatformUnread(){
   renderConvList();
   if(state.conversations.length>0)selectConv(state.conversations[0].id);
 })();
+
+
+// ========== 移动端交互按钮 ==========
+function initMobileToggles() {
+    const leftToggle = document.querySelector('.mobile-toggle-left');
+    const rightToggle = document.querySelector('.mobile-toggle-right');
+    const overlay = document.createElement('div');
+    overlay.className = 'mobile-overlay';
+    document.body.appendChild(overlay);
+
+    // 会话列表切换
+    if (leftToggle) {
+        leftToggle.addEventListener('click', () => {
+            const sidebar = document.querySelector('.pane:first-child');
+            const detail = document.querySelector('.pane.detail');
+            if (sidebar) {
+                sidebar.classList.toggle('mobile-show');
+                if (detail) detail.classList.remove('mobile-show');
+                overlay.classList.toggle('show', sidebar.classList.contains('mobile-show'));
+            }
+        });
+    }
+
+    // 客户详情切换
+    if (rightToggle) {
+        rightToggle.addEventListener('click', () => {
+            const detail = document.querySelector('.pane.detail');
+            const sidebar = document.querySelector('.pane:first-child');
+            if (detail) {
+                detail.classList.toggle('mobile-show');
+                if (sidebar) sidebar.classList.remove('mobile-show');
+                overlay.classList.toggle('show', detail.classList.contains('mobile-show'));
+            }
+        });
+    }
+
+    // 点击遮罩关闭所有面板
+    overlay.addEventListener('click', () => {
+        const sidebar = document.querySelector('.pane:first-child');
+        const detail = document.querySelector('.pane.detail');
+        if (sidebar) sidebar.classList.remove('mobile-show');
+        if (detail) detail.classList.remove('mobile-show');
+        overlay.classList.remove('show');
+    });
+}
+
+// 在 DOMContentLoaded 中调用
+document.addEventListener('DOMContentLoaded', initMobileToggles);

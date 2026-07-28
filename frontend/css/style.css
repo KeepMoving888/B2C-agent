@@ -479,14 +479,18 @@ button{cursor:pointer;font-family:inherit;border:none;outline:none}
   /* 转人工通知全宽 */
   .handoff-notification{left:12px;right:12px;max-width:none;top:auto;bottom:80px}
   /* 移动端切换按钮 */
-  .mobile-toggle{display:inline-flex!important}
+  .mobile-toggle{display:inline-flex!important;align-items:center;justify-content:center}
 }
 
 /* 移动端切换按钮（默认隐藏，手机端显示） */
-.mobile-toggle{display:none;position:fixed;top:12px;z-index:1100;width:40px;height:40px;border-radius:50%;background:var(--blue);color:#fff;border:none;box-shadow:0 2px 8px rgba(37,99,235,.3);align-items:center;justify-content:center;cursor:pointer;font-size:18px}
-.mobile-toggle.left{left:12px}
-.mobile-toggle.right{right:12px}
-.mobile-toggle:hover{transform:scale(1.05)}
+.mobile-toggle{display:none;background:transparent;border:none;color:var(--muted);cursor:pointer;padding:8px;border-radius:8px;transition:background 0.2s;align-items:center;justify-content:center}
+.mobile-toggle-left{margin-right:8px}
+.mobile-toggle-right{margin-left:8px}
+.mobile-toggle:hover{background:var(--bg)}
+
+/* 遮罩层（手机端面板打开时） */
+.mobile-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:999}
+.mobile-overlay.show{display:block}
 
 /* ============ 关键结论高亮增强（提升第一印象） ============ */
 /* AI 建议卡片关键结论放大 */
