@@ -23,9 +23,16 @@
   {
     "query": "tracking shows delivered but I never received it",
     "intent": "物流查询",
-    "relevant_docs": ["faq_002"],
+    "relevant_docs": ["faq_002", "faq_014"],
     "lang": "en",
-    "note": "英文版签收未收到，命中 faq_002"
+    "note": "英文版签收未收到，命中 faq_002 和 faq_014"
+  },
+  {
+    "query": "how long does standard shipping take to Europe?",
+    "intent": "物流查询",
+    "relevant_docs": ["faq_013"],
+    "lang": "en",
+    "note": "英文配送时效咨询，命中 faq_013"
   },
   {
     "query": "商品质量问题，七天之内可以退款吗？",
@@ -63,6 +70,13 @@
     "note": "英文退换货流程，命中 faq_007"
   },
   {
+    "query": "I received a damaged item, can I get a replacement or refund?",
+    "intent": "售后退款",
+    "relevant_docs": ["faq_016"],
+    "lang": "en",
+    "note": "英文商品损坏处理，命中 faq_016"
+  },
+  {
     "query": "蓝牙耳机的续航时间和降噪效果怎么样？支持防水吗？",
     "intent": "商品咨询",
     "relevant_docs": ["faq_005"],
@@ -72,9 +86,9 @@
   {
     "query": "wireless earbuds bluetooth noise cancelling battery life",
     "intent": "商品咨询",
-    "relevant_docs": ["faq_005"],
+    "relevant_docs": ["faq_005", "faq_017"],
     "lang": "en",
-    "note": "英文耳机咨询，命中 faq_005"
+    "note": "英文耳机咨询，命中 faq_005 和 faq_017"
   },
   {
     "query": "智能手表支持心率和血氧监测吗？续航几天？",
@@ -82,6 +96,34 @@
     "relevant_docs": ["faq_006"],
     "lang": "zh",
     "note": "智能手表参数咨询，命中 faq_006"
+  },
+  {
+    "query": "充电宝可以带上飞机吗？支持给笔记本充电吗？",
+    "intent": "商品咨询",
+    "relevant_docs": ["faq_019"],
+    "lang": "zh",
+    "note": "充电宝参数咨询，命中 faq_019"
+  },
+  {
+    "query": "迷你投影仪支持4K吗？续航多久？",
+    "intent": "商品咨询",
+    "relevant_docs": ["faq_020"],
+    "lang": "zh",
+    "note": "投影仪参数咨询，命中 faq_020"
+  },
+  {
+    "query": "机械键盘是什么轴？续航多久？",
+    "intent": "商品咨询",
+    "relevant_docs": ["faq_021"],
+    "lang": "zh",
+    "note": "机械键盘参数咨询，命中 faq_021"
+  },
+  {
+    "query": "does the power bank support laptop charging and airline travel?",
+    "intent": "商品咨询",
+    "relevant_docs": ["faq_022"],
+    "lang": "en",
+    "note": "英文充电宝咨询，命中 faq_022"
   },
   {
     "query": "支付方式有哪些？支持PayPal和信用卡吗？安全吗？",
@@ -107,9 +149,9 @@
   {
     "query": "do I need to pay customs tax for international shipping?",
     "intent": "合规政策",
-    "relevant_docs": ["faq_010"],
+    "relevant_docs": ["faq_010", "faq_040"],
     "lang": "en",
-    "note": "英文关税咨询，命中 faq_010"
+    "note": "英文关税咨询，命中 faq_010 和 faq_040"
   },
   {
     "query": "下单后能修改收货地址吗？怎么改地址？",
@@ -124,5 +166,89 @@
     "relevant_docs": ["faq_012"],
     "lang": "zh",
     "note": "催发货/加急咨询，命中 faq_012"
+  },
+  {
+    "query": "can I change my shipping address after ordering?",
+    "intent": "订单管理",
+    "relevant_docs": ["faq_024"],
+    "lang": "en",
+    "note": "英文修改地址，命中 faq_024"
+  },
+  {
+    "query": "订单还没发货，可以取消吗？退款多久到账？",
+    "intent": "订单管理",
+    "relevant_docs": ["faq_026"],
+    "lang": "zh",
+    "note": "取消订单咨询，命中 faq_026"
+  },
+  {
+    "query": "可以开发票吗？电子发票还是纸质发票？",
+    "intent": "订单管理",
+    "relevant_docs": ["faq_027"],
+    "lang": "zh",
+    "note": "发票咨询，命中 faq_027"
+  },
+  {
+    "query": "支付失败怎么办？已经扣款了吗？",
+    "intent": "支付问题",
+    "relevant_docs": ["faq_028"],
+    "lang": "zh",
+    "note": "支付失败咨询，命中 faq_028"
+  },
+  {
+    "query": "支持分期付款吗？可以分几期？",
+    "intent": "支付问题",
+    "relevant_docs": ["faq_029"],
+    "lang": "zh",
+    "note": "分期付款咨询，命中 faq_029"
+  },
+  {
+    "query": "my payment was declined, what should I do? was I charged?",
+    "intent": "支付问题",
+    "relevant_docs": ["faq_030"],
+    "lang": "en",
+    "note": "英文支付失败，命中 faq_030"
+  },
+  {
+    "query": "蓝牙耳机无法连接怎么办？总是配对失败",
+    "intent": "技术支持",
+    "relevant_docs": ["faq_031"],
+    "lang": "zh",
+    "note": "设备连接问题，命中 faq_031"
+  },
+  {
+    "query": "怎么升级固件？升级失败怎么办？",
+    "intent": "技术支持",
+    "relevant_docs": ["faq_032"],
+    "lang": "zh",
+    "note": "固件升级咨询，命中 faq_032"
+  },
+  {
+    "query": "bluetooth device cannot connect, pairing keeps failing",
+    "intent": "技术支持",
+    "relevant_docs": ["faq_033"],
+    "lang": "en",
+    "note": "英文设备连接问题，命中 faq_033"
+  },
+  {
+    "query": "我要投诉，怎么处理？多久能回复？",
+    "intent": "投诉处理",
+    "relevant_docs": ["faq_035"],
+    "lang": "zh",
+    "note": "投诉处理流程咨询，命中 faq_035"
+  },
+  {
+    "query": "给了差评可以申请补偿吗？补偿多少？",
+    "intent": "投诉处理",
+    "relevant_docs": ["faq_036"],
+    "lang": "zh",
+    "note": "差评补偿咨询，命中 faq_036"
+  },
+  {
+    "query": "I want to file a complaint, how is it handled?",
+    "intent": "投诉处理",
+    "relevant_docs": ["faq_037"],
+    "lang": "en",
+    "note": "英文投诉处理流程，命中 faq_037"
   }
 ]

@@ -82,5 +82,201 @@
     "lang": "zh",
     "content": "催发货处理：标准订单48小时内发货，旺季可能延迟至72小时。加急订单24小时内发货，需支付加急费。可在订单详情页查看实时状态。",
     "keywords": ["催发货", "发货", "ship", "加急", "何时"]
+  },
+  {
+    "id": "faq_013",
+    "category": "物流查询",
+    "lang": "en",
+    "content": "Standard shipping: Europe/North America 7-12 business days, Southeast Asia 3-7 business days, Japan 2-5 business days. Tracking number will be updated within 24 hours after dispatch.",
+    "keywords": ["shipping", "delivery", "tracking", "how long", "days"]
+  },
+  {
+    "id": "faq_014",
+    "category": "物流查询",
+    "lang": "en",
+    "content": "If tracking shows delivered but you haven't received the parcel: 1) Check mailbox, front desk, neighbors; 2) Contact local carrier; 3) File a non-receipt claim within 48 hours and we will investigate.",
+    "keywords": ["delivered", "not received", "missing", "parcel", "claim"]
+  },
+  {
+    "id": "faq_015",
+    "category": "售后退款",
+    "lang": "en",
+    "content": "Refund policy: Quality issues eligible for full refund within 7 days, refunded to original payment method in 3-5 business days. Non-quality returns require item in original condition, shipping fee deducted. Customized items not eligible for returnless refund.",
+    "keywords": ["refund", "return", "quality", "policy", "money back"]
+  },
+  {
+    "id": "faq_016",
+    "category": "售后退款",
+    "lang": "en",
+    "content": "Damaged item handling: Please take photos and contact support within 48 hours of receipt. We will resend a new package or issue a full refund, with shipping covered by us.",
+    "keywords": ["damaged", "broken", "resend", "replacement", "photos"]
+  },
+  {
+    "id": "faq_017",
+    "category": "商品咨询",
+    "lang": "en",
+    "content": "Wireless Bluetooth Earphones Pro: Bluetooth 5.3, 32-hour battery life, active noise cancellation, IPX5 water resistance. Compatible with iOS/Android. 12-month warranty.",
+    "keywords": ["earbuds", "bluetooth", "noise cancelling", "battery", "waterproof"]
+  },
+  {
+    "id": "faq_018",
+    "category": "商品咨询",
+    "lang": "en",
+    "content": "Smart Watch Series 7: 1.8-inch AMOLED display, heart rate/spO2/sleep monitoring, IP68 water resistance, 7-day battery life. Compatible with iOS 12+/Android 6+.",
+    "keywords": ["smartwatch", "watch", "heart rate", "blood oxygen", "battery"]
+  },
+  {
+    "id": "faq_019",
+    "category": "商品咨询",
+    "lang": "zh",
+    "content": "便携充电宝 20000mAh：支持PD 65W快充，可为笔记本电脑充电，双向快充，重量380g。支持过充/过放/短路保护，航班允许携带。",
+    "keywords": ["充电宝", "power bank", "快充", "PD", "65W", "20000"]
+  },
+  {
+    "id": "faq_020",
+    "category": "商品咨询",
+    "lang": "zh",
+    "content": "迷你投影仪 P1：1080P分辨率，支持4K解码，300 ANSI流明，梯形校正，内置扬声器，续航2小时。HDMI/USB/无线投屏。",
+    "keywords": ["投影仪", "projector", "1080P", "4K", "ANSI", "HDMI"]
+  },
+  {
+    "id": "faq_021",
+    "category": "商品咨询",
+    "lang": "zh",
+    "content": "机械键盘 K8：87键红轴，PBT键帽，RGB背光，Type-C可分离线，支持Windows/Mac双系统，6000mAh大电池续航90天。",
+    "keywords": ["键盘", "keyboard", "机械", "红轴", "RGB", "PBT"]
+  },
+  {
+    "id": "faq_022",
+    "category": "商品咨询",
+    "lang": "en",
+    "content": "Portable Power Bank 20000mAh: PD 65W fast charging, can charge laptops, bidirectional fast charging, weight 380g. Over-charge/over-discharge/short-circuit protection, airline-approved.",
+    "keywords": ["power bank", "charger", "fast charge", "PD", "laptop", "airline"]
+  },
+  {
+    "id": "faq_023",
+    "category": "商品咨询",
+    "lang": "en",
+    "content": "Mini Projector P1: 1080P resolution, 4K decoding support, 300 ANSI lumens, keystone correction, built-in speaker, 2-hour battery. HDMI/USB/wireless casting.",
+    "keywords": ["projector", "mini", "1080p", "4k", "HDMI", "casting"]
+  },
+  {
+    "id": "faq_024",
+    "category": "订单管理",
+    "lang": "en",
+    "content": "Address modification: Free to change shipping address before dispatch. After dispatch, need to contact carrier for interception, extra fee may apply. Please confirm address within 24 hours of ordering.",
+    "keywords": ["address", "change", "modify", "shipping", "update"]
+  },
+  {
+    "id": "faq_025",
+    "category": "订单管理",
+    "lang": "en",
+    "content": "Shipping schedule: Standard orders ship within 48 hours, may extend to 72 hours during peak season. Expedited orders ship within 24 hours with extra fee. Real-time status available on order details page.",
+    "keywords": ["shipping", "dispatch", "expedited", "when", "status"]
+  },
+  {
+    "id": "faq_026",
+    "category": "订单管理",
+    "lang": "zh",
+    "content": "订单取消：未发货订单可免费取消，已发货订单需拦截退回，产生退回运费。取消申请提交后1-2个工作日处理，退款原路返回。",
+    "keywords": ["取消", "订单", "cancel", "order", "退款"]
+  },
+  {
+    "id": "faq_027",
+    "category": "订单管理",
+    "lang": "zh",
+    "content": "发票服务：支持电子发票和纸质发票，电子发票在下单后24小时内发送至注册邮箱，纸质发票随包裹寄送。可开具增值税专用发票。",
+    "keywords": ["发票", "invoice", "电子", "纸质", "增值税"]
+  },
+  {
+    "id": "faq_028",
+    "category": "支付问题",
+    "lang": "zh",
+    "content": "支付失败排查：1) 检查卡号/有效期/CVV是否正确；2) 确认银行卡是否开通跨境支付；3) 联系发卡行核实风险拦截；4) 更换支付方式（PayPal/Apple Pay）。支付失败不会扣款。",
+    "keywords": ["支付失败", "付款", "payment failed", "扣款", "信用卡"]
+  },
+  {
+    "id": "faq_029",
+    "category": "支付问题",
+    "lang": "zh",
+    "content": "分期付款：支持信用卡分期（3/6/12期），分期手续费由发卡行收取。订单金额满500元即可使用分期，具体期数和费率以下单页面显示为准。",
+    "keywords": ["分期", " installment", "信用卡", "手续费", "500"]
+  },
+  {
+    "id": "faq_030",
+    "category": "支付问题",
+    "lang": "en",
+    "content": "Payment failed troubleshooting: 1) Check card number/expiry/CVV; 2) Confirm card supports international payments; 3) Contact bank for risk block; 4) Try PayPal/Apple Pay. Failed payments will not be charged.",
+    "keywords": ["payment failed", "declined", "card", "charge", "troubleshoot"]
+  },
+  {
+    "id": "faq_031",
+    "category": "技术支持",
+    "lang": "zh",
+    "content": "设备 pairing/连接问题：1) 确认设备在有效范围内（10米）；2) 清除已配对列表后重新配对；3) 重启设备；4) 检查固件版本是否最新。仍无法连接可申请换货。",
+    "keywords": ["连接", "配对", "pairing", "蓝牙", "无法连接", "固件"]
+  },
+  {
+    "id": "faq_032",
+    "category": "技术支持",
+    "lang": "zh",
+    "content": "固件升级：通过官方App检测并升级最新固件。升级过程中请保持设备电量>50%且不要断开连接。升级失败可恢复出厂设置后重试。",
+    "keywords": ["固件", "升级", "firmware", "update", "恢复出厂"]
+  },
+  {
+    "id": "faq_033",
+    "category": "技术支持",
+    "lang": "en",
+    "content": "Device pairing/connection issues: 1) Ensure device is within range (10m); 2) Clear paired list and re-pair; 3) Restart device; 4) Check firmware version. If still unable to connect, replacement available.",
+    "keywords": ["connection", "pairing", "bluetooth", "cannot connect", "firmware"]
+  },
+  {
+    "id": "faq_034",
+    "category": "技术支持",
+    "lang": "en",
+    "content": "Firmware update: Use official App to detect and update to latest firmware. Keep device battery >50% and do not disconnect during update. If update fails, factory reset and retry.",
+    "keywords": ["firmware", "update", "upgrade", "factory reset", "app"]
+  },
+  {
+    "id": "faq_035",
+    "category": "投诉处理",
+    "lang": "zh",
+    "content": "投诉处理流程：1) 24小时内人工客服响应；2) 责任认定后3个工作日内给出方案；3) 严重投诉升级至主管48小时内处理；4) 满意度回访。投诉渠道：在线客服/邮件/电话。",
+    "keywords": ["投诉", "complaint", "升级", "主管", "处理"]
+  },
+  {
+    "id": "faq_036",
+    "category": "投诉处理",
+    "lang": "zh",
+    "content": "差评补偿：确认因产品/物流问题导致差评，可申请部分退款或优惠券补偿。补偿金额根据问题严重程度评估，最高不超过商品金额的30%。",
+    "keywords": ["差评", "补偿", "negative review", "退款", "优惠券"]
+  },
+  {
+    "id": "faq_037",
+    "category": "投诉处理",
+    "lang": "en",
+    "content": "Complaint handling process: 1) Human agent responds within 24 hours; 2) Resolution within 3 business days after responsibility assessment; 3) Serious complaints escalated to supervisor within 48 hours; 4) Satisfaction follow-up. Channels: live chat/email/phone.",
+    "keywords": ["complaint", "escalate", "supervisor", "resolution", "process"]
+  },
+  {
+    "id": "faq_038",
+    "category": "合规政策",
+    "lang": "en",
+    "content": "Payment security: We support credit card, PayPal, Apple Pay, Google Pay and local payment methods, all PCI-DSS certified and encrypted. We do not store full card numbers.",
+    "keywords": ["payment", "security", "paypal", "credit card", "PCI-DSS"]
+  },
+  {
+    "id": "faq_039",
+    "category": "合规政策",
+    "lang": "en",
+    "content": "Privacy protection: Strictly comply with GDPR and local data protection laws. Personal information is used only for order processing and will not be sold to third parties. You can request data deletion at any time.",
+    "keywords": ["privacy", "GDPR", "data", "delete", "protection"]
+  },
+  {
+    "id": "faq_040",
+    "category": "合规政策",
+    "lang": "en",
+    "content": "Customs and duties: Duties are levied by destination customs, typically borne by the recipient. Many countries offer duty-free thresholds for low-value parcels. DDP (Delivered Duty Paid) service is available as an option.",
+    "keywords": ["customs", "duties", "tax", "DDP", "import"]
   }
 ]

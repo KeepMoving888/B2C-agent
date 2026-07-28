@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-  多语言多平台智能客服系统 - 一键智能启动脚本
+  B2C Agent - One-click startup script
 .DESCRIPTION
-  自动检测并清理端口冲突，启动后端和前端服务
-  支持参数：-BackendOnly / -FrontendOnly / -NoKill
+  Auto-detect and clean port conflicts, start backend and frontend services.
+  Supports params: -BackendOnly / -FrontendOnly / -NoKill
 #>
 param(
   [switch]$BackendOnly,
@@ -15,7 +15,7 @@ $ErrorActionPreference = 'Stop'
 $PROJECT_ROOT = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $BACKEND_DIR = Join-Path $PROJECT_ROOT 'backend'
 $FRONTEND_DIR = Join-Path $PROJECT_ROOT 'frontend'
-$PYTHON = 'C:\Users\Windows\AppData\Roaming\TRAE SOLO CN\ModularData\ai-agent\vm\tools\python\python.exe'
+$PYTHON = 'python'
 $BACKEND_PORT = 8000
 $FRONTEND_PORT = 8080
 
@@ -49,27 +49,27 @@ function Clear-Port($port, $projectKeyword) {
 
   $isOurProject = $proc.CmdLine -match $projectKeyword
   if ($isOurProject) {
-    Write-Warn "端口 $port 被本项目旧进程占用 (PID $($proc.PID))，自动清理"
+    Write-Warn "Port $port occupied by old process of this project (PID $($proc.PID)), auto-cleaning"
     Stop-Process -Id $proc.PID -Force -ErrorAction SilentlyContinue
     Start-Sleep -Milliseconds 500
   } else {
-    Write-Err "端口 $port 被其他项目占用 (PID $($proc.PID), $($proc.Name))"
-    Write-Host "    命令行: $($proc.CmdLine.Substring(0, [Math]::Min(120, $proc.CmdLine.Length)))" -ForegroundColor DarkGray
-    $choice = Read-Host "    是否终止该进程? (y/N)"
+    Write-Err "Port $port occupied by another process (PID $($proc.PID), $($proc.Name))"
+    Write-Host "    CmdLine: $($proc.CmdLine.Substring(0, [Math]::Min(120, $proc.CmdLine.Length)))" -ForegroundColor DarkGray
+    $choice = Read-Host "    Kill this process? (y/N)"
     if ($choice -eq 'y' -or $choice -eq 'Y') {
       Stop-Process -Id $proc.PID -Force -ErrorAction SilentlyContinue
       Start-Sleep -Milliseconds 500
-      Write-OK "已终止 PID $($proc.PID)"
+      Write-OK "Killed PID $($proc.PID)"
     } else {
-      Write-Err "无法启动：端口 $port 被占用且用户拒绝终止"
+      Write-Err "Cannot start: port $port occupied and user declined to kill"
       exit 1
     }
   }
 }
 
 function Start-Backend {
-  Write-Step "启动后端服务 (端口 $BACKEND_PORT)"
-  Clear-Port $BACKEND_PORT 'multilang-cs-platform|app\.main'
+  Write-Step "Starting backend (port $BACKEND_PORT)"
+  Clear-Port $BACKEND_PORT 'B2C-agent|app\.main'
 
   $backendJob = Start-Job -ScriptBlock {
     param($dir, $python, $port)
@@ -77,8 +77,7 @@ function Start-Backend {
     & $python -m uvicorn app.main:app --host 0.0.0.0 --port $port 2>&1
   } -ArgumentList $BACKEND_DIR, $PYTHON, $BACKEND_PORT
 
-  # 等待后端就绪（最多30秒）
-  Write-Host "    等待后端启动..." -NoNewline
+  Write-Host "    Waiting for backend..." -NoNewline
   $ready = $false
   for ($i = 0; $i -lt 30; $i++) {
     Start-Sleep -Seconds 1
@@ -94,10 +93,10 @@ function Start-Backend {
 
   if ($ready) {
     Write-Host ""
-    Write-OK "后端已就绪: mode=$($r.mode)"
+    Write-OK "Backend ready: mode=$($r.mode)"
   } else {
     Write-Host ""
-    Write-Err "后端启动超时（30秒），请检查日志"
+    Write-Err "Backend startup timeout (30s), check logs"
     Receive-Job $backendJob
     exit 1
   }
@@ -105,30 +104,29 @@ function Start-Backend {
 }
 
 function Start-Frontend {
-  Write-Step "启动前端服务 (端口 $FRONTEND_PORT)"
+  Write-Step "Starting frontend (port $FRONTEND_PORT)"
   Clear-Port $FRONTEND_PORT 'http\.server'
 
   $frontendJob = Start-Job -ScriptBlock {
     param($dir, $python, $port)
     Set-Location $dir
-    # 使用 serve.py（禁用缓存），确保JS/CSS修改立即生效
     & $python serve.py $port 2>&1
   } -ArgumentList $FRONTEND_DIR, $PYTHON, $FRONTEND_PORT
 
   Start-Sleep -Seconds 1
   if (Test-PortInUse $FRONTEND_PORT) {
-    Write-OK "前端已启动: http://localhost:$FRONTEND_PORT/"
+    Write-OK "Frontend started: http://localhost:$FRONTEND_PORT/"
   } else {
-    Write-Err "前端启动失败"
+    Write-Err "Frontend startup failed"
     Receive-Job $frontendJob
     exit 1
   }
   return $frontendJob
 }
 
-# ===== 主流程 =====
+# ===== Main =====
 Write-Host "`n========================================" -ForegroundColor Cyan
-Write-Host " 多语言多平台智能客服系统 - 智能启动" -ForegroundColor Cyan
+Write-Host " B2C Agent - Smart Startup" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 
 $jobs = @()
@@ -140,21 +138,20 @@ if (!$BackendOnly) {
   $jobs += Start-Frontend
 }
 
-Write-Step "启动完成"
-Write-Host "    后端 API:  http://localhost:$BACKEND_PORT/docs" -ForegroundColor White
-Write-Host "    前端页面:  http://localhost:$FRONTEND_PORT/" -ForegroundColor White
-Write-Host "    健康检查:  http://localhost:$BACKEND_PORT/health" -ForegroundColor White
+Write-Step "Startup complete"
+Write-Host "    Backend API:  http://localhost:$BACKEND_PORT/docs" -ForegroundColor White
+Write-Host "    Frontend:     http://localhost:$FRONTEND_PORT/" -ForegroundColor White
+Write-Host "    Health:       http://localhost:$BACKEND_PORT/health" -ForegroundColor White
 Write-Host ""
-Write-Host "    按 Ctrl+C 停止所有服务" -ForegroundColor DarkGray
+Write-Host "    Press Ctrl+C to stop all services" -ForegroundColor DarkGray
 Write-Host ""
 
-# 保持运行，直到用户按Ctrl+C
 try {
   while ($jobs | Where-Object { $_.State -eq 'Running' }) {
     Start-Sleep -Seconds 1
   }
 } finally {
-  Write-Step "停止所有服务"
+  Write-Step "Stopping all services"
   $jobs | Stop-Job -ErrorAction SilentlyContinue
   $jobs | Remove-Job -ErrorAction SilentlyContinue
 }

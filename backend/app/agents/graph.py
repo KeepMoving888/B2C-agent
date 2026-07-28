@@ -89,16 +89,36 @@ def analyze_node(state: AgentState) -> AgentState:
 
 
 def rag_node(state: AgentState) -> AgentState:
-    """RAG 检索节点"""
+    """RAG 检索节点（集成 Elasticsearch 混合检索 + Redis 缓存 + Jaeger 追踪）"""
     try:
         from app.rag.retriever import retrieve
+        from app.services import redis_client, tracer
+
         message = state.get("message", "")
         intent = state.get("intent", "")
         lang = state.get("lang", "en")
-        sources = retrieve(message, intent=intent, top_k=3, lang=lang)
+
+        # Redis 缓存命中检查
+        import hashlib
+        query_hash = hashlib.md5(f"{message}:{lang}".encode()).hexdigest()
+        cached = redis_client.get_cached_knowledge(query_hash)
+        if cached:
+            state = {**state, "rag_sources": cached}
+            state = record_trace(state, "rag", "rag",
+                                 f"Redis 缓存命中 {len(cached)} 条知识",
+                                 AgentStatus.SUCCESS.value)
+            return state
+
+        # Jaeger 追踪 + 混合检索（向量 + ES BM25）
+        with tracer.span("rag.retrieve", {"query": message[:100], "lang": lang}):
+            sources = retrieve(message, intent=intent, top_k=3, lang=lang)
+
+        # 写入 Redis 缓存
+        redis_client.cache_knowledge(query_hash, sources)
+
         state = {**state, "rag_sources": sources}
         state = record_trace(state, "rag", "rag",
-                             f"检索到{len(sources)}条知识",
+                             f"混合检索到{len(sources)}条知识",
                              AgentStatus.SUCCESS.value)
     except Exception as e:
         logger.debug(f"RAG 检索跳过：{e}")

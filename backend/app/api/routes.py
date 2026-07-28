@@ -28,6 +28,16 @@ async def chat(req: ChatRequest):
     """
     logger.info(f"收到会话请求 platform={req.platform} lang={req.lang} message={req.message[:50]}...")
 
+    # Kafka 异步接入：发布客户消息（削峰填谷）
+    from app.services import kafka_client
+    kafka_client.publish_customer_message(
+        platform=req.platform, conv_id=req.conv_id or "",
+        message=req.message, lang=req.lang,
+    )
+
+    # Jaeger 追踪：会话处理全链路
+    from app.services import tracer, postgres, redis_client
+
     _start_ts = time.time()
     state = {
         "platform": req.platform,
@@ -37,8 +47,52 @@ async def chat(req: ChatRequest):
         "conv_id": req.conv_id,
     }
 
-    result = run_graph(state)
+    # Redis 会话状态恢复（多轮对话上下文）
+    if req.conv_id:
+        cached_state = redis_client.load_session_state(req.conv_id)
+        if cached_state and cached_state.get("history"):
+            state["history"] = cached_state["history"] + state["history"]
+
+    with tracer.span("chat.process", {"platform": req.platform, "lang": req.lang}):
+        result = run_graph(state)
     _latency_ms = (time.time() - _start_ts) * 1000
+
+    # PostgreSQL 持久化（审计 + 历史回溯）
+    postgres.save_conversation(req.conv_id or "", req.platform, lang=req.lang)
+    postgres.save_message(
+        req.conv_id or "", "user", req.message,
+        intent=result.get("intent", ""), lang=req.lang,
+    )
+    postgres.save_message(
+        req.conv_id or "", "assistant", result.get("final_reply", ""),
+        intent=result.get("intent", ""), agent=result.get("agent_name", ""),
+        lang=req.lang,
+    )
+
+    # 记录转交事件
+    handoff_reason = result.get("handoff_reason", "")
+    if handoff_reason:
+        postgres.record_handoff(
+            req.conv_id or "", result.get("agent_name", ""),
+            "human_handoff", handoff_reason,
+        )
+        kafka_client.publish_handoff(
+            req.conv_id or "", result.get("agent_name", ""),
+            "human_handoff", handoff_reason,
+        )
+
+    # Redis 更新会话状态
+    redis_client.save_session_state(req.conv_id or "", {
+        "history": state["history"],
+        "intent": result.get("intent", ""),
+        "agent_chain": result.get("agent_chain", []),
+    })
+
+    # Kafka 发布 Agent 回复
+    kafka_client.publish_agent_reply(
+        req.conv_id or "", result.get("final_reply", ""),
+        result.get("agent_name", ""), result.get("intent", ""), req.lang,
+    )
 
     # 记录监控指标
     record_chat(
@@ -53,9 +107,28 @@ async def chat(req: ChatRequest):
         lang=req.lang,
     )
 
+    # 翻译回复：Agent 生成中文回复，按目标语言翻译
+    reply_zh = result.get("final_reply_zh", result.get("final_reply", req.message))
+    target_lang = req.lang or "zh"
+    if target_lang == "zh":
+        reply = reply_zh
+    else:
+        try:
+            reply = translate(reply_zh, "zh", target_lang)
+            if not reply or reply == reply_zh:
+                # 翻译失败（LLM 不可用且回退返回原文），尝试英文兜底
+                if target_lang == "en":
+                    reply = translate(reply_zh, "zh", "en")
+                else:
+                    # 非 zh→en 方向，LLM 不可用时保留中文并标注
+                    reply = reply_zh
+        except Exception as e:
+            logger.warning(f"翻译失败 zh→{target_lang}: {e}")
+            reply = reply_zh
+
     return ChatResponse(
-        reply=result.get("final_reply", req.message),
-        reply_zh=result.get("final_reply_zh", req.message),
+        reply=reply,
+        reply_zh=reply_zh,
         agent=result.get("agent_name", "咨询Agent"),
         route=result.get("route_desc", ""),
         intent=result.get("intent", ""),

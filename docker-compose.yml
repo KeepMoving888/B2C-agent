@@ -173,8 +173,17 @@ services:
     container_name: cs-prometheus
     ports:
       - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      - backend
   grafana:
     image: grafana/grafana:latest
     container_name: cs-grafana
@@ -184,11 +193,10 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: admin
 
 volumes:
-  es_data:
-  pg_data:
-  redis_data:
-
-volumes:
   etcd_data:
   minio_data:
   milvus_data:
+  es_data:
+  pg_data:
+  redis_data:
+  prometheus_data:

@@ -1,0 +1,26 @@
+# Prometheus 监控配置
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # 后端应用指标
+  - job_name: 'b2c-backend'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['backend:8000']
+        labels:
+          service: 'fastapi'
+
+  # 后端健康检查
+  - job_name: 'b2c-health'
+    metrics_path: /health
+    static_configs:
+      - targets: ['backend:8000']
+        labels:
+          service: 'health'
+
+  # Prometheus 自身
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

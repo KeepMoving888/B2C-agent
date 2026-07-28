@@ -16,6 +16,10 @@ from app.rag.indexer import (
 )
 from app.rag.multilingual import preprocess_query, PARTITION_DEFAULT
 from app.rag.reranker import rerank
+from app.services import es_client
+
+# RRF 融合参数
+_RRF_K = 60  # RRF 常数（标准值 60）
 
 
 # CoT 查询扩展：问题词与停用词
@@ -121,8 +125,11 @@ def retrieve(query: str, intent: str = "", top_k: int = 3, lang: str = "") -> li
         vec_results += _vector_search(aligned, partition=None, top_k=top_k * 2)
         bm25_results += _bm25_search(aligned, intent=intent, partition=None, top_k=top_k * 2)
 
-    # 3. RRF 融合
+    # 3. RRF 融合（向量 + BM25 + Elasticsearch 三路融合）
+    es_results = es_client.search(query, lang=pre["lang"], top_k=top_k * 2)
     fused = _rrf_fusion(vec_results, bm25_results)
+    if es_results:
+        fused = _rrf_fusion(fused, es_results)
 
     # 4. Cross-Encoder 重排序（消除向量检索语义偏移）
     if fused:

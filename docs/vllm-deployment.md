@@ -109,3 +109,87 @@ curl http://localhost:8001/metrics
 **Q: 首次启动慢？**
 - vLLM 首次加载需编译 CUDA kernel，属正常现象
 - 后续启动会缓存
+
+
+## Docker Compose 一键部署
+
+### 完整栈启动（Milvus + 后端 + 前端 + 监控）
+
+```bash
+# 启动基础服务（Milvus + 后端 + 前端 + ES + Kafka + PostgreSQL + Redis + 监控）
+docker-compose up -d
+
+# 查看服务状态
+docker-compose ps
+
+# 查看后端日志
+docker-compose logs -f backend
+
+# 停止所有服务
+docker-compose down
+```
+
+### 分阶段启动
+
+```bash
+# 仅启动向量数据库
+docker-compose up -d etcd minio milvus
+
+# 启动后端 + 前端
+docker-compose up -d backend frontend
+
+# 启动监控栈
+docker-compose up -d prometheus grafana jaeger
+```
+
+### 启用 vLLM 推理服务（需 GPU）
+
+1. 准备 AWQ 量化模型权重：
+```bash
+mkdir -p deployment/vllm/models
+# 将 Qwen2.5-7B-Instruct-AWQ 权重放入 deployment/vllm/models/
+```
+
+2. 取消 docker-compose.yml 中 vllm 服务的注释，然后启动：
+```bash
+docker-compose up -d vllm
+```
+
+### 服务端口映射
+
+| 服务 | 端口 | 说明 |
+|------|------|------|
+| 后端 API | 8000 | FastAPI + Swagger docs |
+| 前端 | 8080 | Nginx 静态服务 |
+| Milvus | 19530 | 向量数据库 |
+| Elasticsearch | 9200 | BM25 检索 |
+| PostgreSQL | 5432 | 业务数据 |
+| Redis | 6379 | 缓存 |
+| Prometheus | 9090 | 监控指标 |
+| Grafana | 3000 | 可视化面板 |
+| Jaeger | 16686 | 链路追踪 |
+| vLLM | 8001 | 模型推理 |
+
+### 健康检查
+
+```bash
+# 后端健康检查
+curl http://localhost:8000/health
+# 返回: {"status":"ok","mode":"vllm","version":"1.0.0"}
+
+# Prometheus 指标
+curl http://localhost:8000/metrics
+
+# Milvus 连接检查
+python -c "from pymilvus import connections; connections.connect(host='localhost', port='19530'); print('Milvus OK')"
+```
+
+### 故障排查
+
+| 问题 | 解决方案 |
+|------|----------|
+| 后端启动失败 | `docker-compose logs backend` 查看错误日志 |
+| Milvus 连接超时 | 确认 etcd/minio 健康检查通过 |
+| 前端无法访问 API | 检查 nginx.conf 反向代理配置 |
+| vLLM 显存不足 | 降低 `gpu_memory_utilization` 至 0.8 |
+| Prometheus 无数据 | 确认后端 `/metrics` 端点可访问 |

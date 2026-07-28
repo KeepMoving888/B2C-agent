@@ -72,17 +72,26 @@ app.include_router(api_router)
 app.include_router(ws_router)
 
 
-@app.get("/health", response_model=HealthResponse)
+@app.get("/health")
 async def health():
-    """健康检查
+    """健康检查（含基础设施状态）
 
     mode 取值: vllm / openai / deepseek / qwen / custom / rule
     """
-    return HealthResponse(
-        status="ok",
-        mode=get_mode(),
-        version="1.0.0",
-    )
+    from app.services import redis_client, postgres, es_client, kafka_client, tracer
+    infra = {
+        "redis": redis_client.health_check(),
+        "postgres": postgres.health_check(),
+        "elasticsearch": es_client.health_check(),
+        "kafka": kafka_client.health_check(),
+        "jaeger": tracer.health_check(),
+    }
+    return {
+        "status": "ok",
+        "mode": get_mode(),
+        "version": "1.0.0",
+        "infrastructure": infra,
+    }
 
 
 @app.get("/metrics")

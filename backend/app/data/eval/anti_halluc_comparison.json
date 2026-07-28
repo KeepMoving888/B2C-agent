@@ -1,0 +1,381 @@
+{
+  "summary": {
+    "total_cases": 8,
+    "valid_cases": 8,
+    "avg_accuracy": 0.0,
+    "expected_doc_hit_rate": 1.0,
+    "avg_rag_confidence": 0.7995,
+    "avg_faithfulness": 0.75,
+    "total_citations": 24,
+    "escalate_count": 3,
+    "risk_distribution": {
+      "low": 5,
+      "medium": 0,
+      "high": 3
+    },
+    "confidence_levels": {
+      "high": 8,
+      "medium": 0,
+      "low": 0
+    },
+    "test_mode": "rule_engine + RAG memory fallback (no LLM)"
+  },
+  "comparison": {
+    "with_anti_hallucination": {
+      "description": "回复经反幻觉校验，附带置信度/一致性/风险报告，可标注警告并触发转人工",
+      "has_metadata": true,
+      "escalate_count": 3
+    },
+    "without_anti_hallucination": {
+      "description": "原始回复，无质量元数据、无警告标注、无转人工触发",
+      "has_metadata": false,
+      "escalate_count": 0
+    }
+  },
+  "details": [
+    {
+      "query": "蓝牙耳机的续航时间是多少小时？支持保修吗？",
+      "note": "事实型查询",
+      "expected_doc": "faq_005",
+      "retrieved_docs": [
+        "faq_005",
+        "faq_020",
+        "faq_021"
+      ],
+      "expected_doc_hit": true,
+      "accuracy": 0.0,
+      "fact_details": [
+        {
+          "fact": "32小时",
+          "found": false
+        },
+        {
+          "fact": "12个月",
+          "found": false
+        }
+      ],
+      "reply_preview": "感谢您的耐心。该问题需要人工客服进一步核实处理，已为您转接至对应技能组。\n工单已创建 #TKT-STD，您的对话记录已同步给客服专员。\n预计等待3-5分钟，客服专员将通过此会话与您联系。如需加急处理请回复\"加急\"，如有其他问题也可随时告诉我。",
+      "anti_hallucination": {
+        "confidence": 0.8048,
+        "confidence_level": "high",
+        "faithfulness": 1.0,
+        "faithfulness_passed": true,
+        "hallucination_risk": "low",
+        "should_escalate": false,
+        "citations_count": 3,
+        "risks": [],
+        "facts_extracted": [
+          "3",
+          "5"
+        ],
+        "facts_supported": [
+          "3",
+          "5"
+        ],
+        "facts_unsupported": []
+      }
+    },
+    {
+      "query": "退款多久到账？非质量问题怎么处理？",
+      "note": "政策型查询",
+      "expected_doc": "faq_003",
+      "retrieved_docs": [
+        "faq_003",
+        "faq_007",
+        "faq_004"
+      ],
+      "expected_doc_hit": true,
+      "accuracy": 0.0,
+      "fact_details": [
+        {
+          "fact": "3-5个工作日",
+          "found": false
+        },
+        {
+          "fact": "扣除运费",
+          "found": false
+        }
+      ],
+      "reply_preview": "感谢您的耐心。该问题需要人工客服进一步核实处理，已为您转接至对应技能组。\n工单已创建 #TKT-STD，您的对话记录已同步给客服专员。\n预计等待3-5分钟，客服专员将通过此会话与您联系。如需加急处理请回复\"加急\"，如有其他问题也可随时告诉我。",
+      "anti_hallucination": {
+        "confidence": 0.8078,
+        "confidence_level": "high",
+        "faithfulness": 1.0,
+        "faithfulness_passed": true,
+        "hallucination_risk": "low",
+        "should_escalate": false,
+        "citations_count": 3,
+        "risks": [],
+        "facts_extracted": [
+          "3",
+          "5"
+        ],
+        "facts_supported": [
+          "3",
+          "5"
+        ],
+        "facts_unsupported": []
+      }
+    },
+    {
+      "query": "智能手表支持血氧监测吗？防水等级是多少？",
+      "note": "规格型查询",
+      "expected_doc": "faq_006",
+      "retrieved_docs": [
+        "faq_006",
+        "faq_005",
+        "faq_032"
+      ],
+      "expected_doc_hit": true,
+      "accuracy": 0.0,
+      "fact_details": [
+        {
+          "fact": "血氧",
+          "found": false
+        },
+        {
+          "fact": "IP68",
+          "found": false
+        }
+      ],
+      "reply_preview": "感谢您的耐心。该问题需要人工客服进一步核实处理，已为您转接至对应技能组。\n工单已创建 #TKT-STD，您的对话记录已同步给客服专员。\n预计等待3-5分钟，客服专员将通过此会话与您联系。如需加急处理请回复\"加急\"，如有其他问题也可随时告诉我。",
+      "anti_hallucination": {
+        "confidence": 0.8048,
+        "confidence_level": "high",
+        "faithfulness": 1.0,
+        "faithfulness_passed": true,
+        "hallucination_risk": "low",
+        "should_escalate": false,
+        "citations_count": 3,
+        "risks": [],
+        "facts_extracted": [
+          "3",
+          "5"
+        ],
+        "facts_supported": [
+          "3",
+          "5"
+        ],
+        "facts_unsupported": []
+      }
+    },
+    {
+      "query": "充电宝可以带上飞机吗？支持给笔记本充电吗？",
+      "note": "合规规格查询",
+      "expected_doc": "faq_019",
+      "retrieved_docs": [
+        "faq_019",
+        "faq_021",
+        "faq_032"
+      ],
+      "expected_doc_hit": true,
+      "accuracy": 0.0,
+      "fact_details": [
+        {
+          "fact": "航班允许",
+          "found": false
+        },
+        {
+          "fact": "PD 65W",
+          "found": false
+        }
+      ],
+      "reply_preview": "感谢您的耐心。该问题需要人工客服进一步核实处理，已为您转接至对应技能组。\n工单已创建 #TKT-STD，您的对话记录已同步给客服专员。\n预计等待3-5分钟，客服专员将通过此会话与您联系。如需加急处理请回复\"加急\"，如有其他问题也可随时告诉我。",
+      "anti_hallucination": {
+        "confidence": 0.8032,
+        "confidence_level": "high",
+        "faithfulness": 1.0,
+        "faithfulness_passed": true,
+        "hallucination_risk": "low",
+        "should_escalate": false,
+        "citations_count": 3,
+        "risks": [],
+        "facts_extracted": [
+          "3",
+          "5"
+        ],
+        "facts_supported": [
+          "3",
+          "5"
+        ],
+        "facts_unsupported": []
+      }
+    },
+    {
+      "query": "跨境订单的关税由谁承担？有免税额度吗？",
+      "note": "政策型查询",
+      "expected_doc": "faq_010",
+      "retrieved_docs": [
+        "faq_010",
+        "faq_004",
+        "faq_027"
+      ],
+      "expected_doc_hit": true,
+      "accuracy": 0.0,
+      "fact_details": [
+        {
+          "fact": "收件人承担",
+          "found": false
+        },
+        {
+          "fact": "免税",
+          "found": false
+        }
+      ],
+      "reply_preview": "感谢您的耐心。该问题需要人工客服进一步核实处理，已为您转接至对应技能组。\n工单已创建 #TKT-STD，您的对话记录已同步给客服专员。\n预计等待3-5分钟，客服专员将通过此会话与您联系。如需加急处理请回复\"加急\"，如有其他问题也可随时告诉我。",
+      "anti_hallucination": {
+        "confidence": 0.8032,
+        "confidence_level": "high",
+        "faithfulness": 0.0,
+        "faithfulness_passed": false,
+        "hallucination_risk": "high",
+        "should_escalate": true,
+        "citations_count": 3,
+        "risks": [
+          "low_faithfulness: 一致性=0.0000 < 0.7，未支持事实 2/2"
+        ],
+        "facts_extracted": [
+          "3",
+          "5"
+        ],
+        "facts_supported": [],
+        "facts_unsupported": [
+          "3",
+          "5"
+        ]
+      }
+    },
+    {
+      "query": "How long does the battery last for the earphones? What is the warranty period?",
+      "note": "英文事实型查询",
+      "expected_doc": "faq_017",
+      "retrieved_docs": [
+        "faq_017",
+        "faq_018",
+        "faq_023"
+      ],
+      "expected_doc_hit": true,
+      "accuracy": 0.0,
+      "fact_details": [
+        {
+          "fact": "32-hour",
+          "found": false
+        },
+        {
+          "fact": "12-month",
+          "found": false
+        }
+      ],
+      "reply_preview": "Thank you. you耐心. 该questionsneed人工客服进一步verifyprocess, has beenforyou转接至对应技can组. 工单has been创建 #TKT-STD, you对话记录has beensyncto客服专员. 预计等待3-5minutes, 客服专员will通过此will话andyoucontact. if you needexpediteproc",
+      "anti_hallucination": {
+        "confidence": 0.7538,
+        "confidence_level": "high",
+        "faithfulness": 1.0,
+        "faithfulness_passed": true,
+        "hallucination_risk": "low",
+        "should_escalate": false,
+        "citations_count": 3,
+        "risks": [],
+        "facts_extracted": [
+          "3",
+          "5"
+        ],
+        "facts_supported": [
+          "3",
+          "5"
+        ],
+        "facts_unsupported": []
+      }
+    },
+    {
+      "query": "这台投影仪的分辨率是多少？支持4K吗？",
+      "note": "规格型查询",
+      "expected_doc": "faq_020",
+      "retrieved_docs": [
+        "faq_020",
+        "faq_023",
+        "faq_006"
+      ],
+      "expected_doc_hit": true,
+      "accuracy": 0.0,
+      "fact_details": [
+        {
+          "fact": "1080P",
+          "found": false
+        },
+        {
+          "fact": "4K",
+          "found": false
+        }
+      ],
+      "reply_preview": "感谢您的耐心。该问题需要人工客服进一步核实处理，已为您转接至对应技能组。\n工单已创建 #TKT-STD，您的对话记录已同步给客服专员。\n预计等待3-5分钟，客服专员将通过此会话与您联系。如需加急处理请回复\"加急\"，如有其他问题也可随时告诉我。",
+      "anti_hallucination": {
+        "confidence": 0.8094,
+        "confidence_level": "high",
+        "faithfulness": 0.5,
+        "faithfulness_passed": false,
+        "hallucination_risk": "high",
+        "should_escalate": true,
+        "citations_count": 3,
+        "risks": [
+          "low_faithfulness: 一致性=0.5000 < 0.7，未支持事实 1/2"
+        ],
+        "facts_extracted": [
+          "3",
+          "5"
+        ],
+        "facts_supported": [
+          "3"
+        ],
+        "facts_unsupported": [
+          "5"
+        ]
+      }
+    },
+    {
+      "query": "机械键盘是什么轴体？续航多久？",
+      "note": "规格型查询",
+      "expected_doc": "faq_021",
+      "retrieved_docs": [
+        "faq_021",
+        "faq_020",
+        "faq_006"
+      ],
+      "expected_doc_hit": true,
+      "accuracy": 0.0,
+      "fact_details": [
+        {
+          "fact": "红轴",
+          "found": false
+        },
+        {
+          "fact": "90天",
+          "found": false
+        }
+      ],
+      "reply_preview": "感谢您的耐心。该问题需要人工客服进一步核实处理，已为您转接至对应技能组。\n工单已创建 #TKT-STD，您的对话记录已同步给客服专员。\n预计等待3-5分钟，客服专员将通过此会话与您联系。如需加急处理请回复\"加急\"，如有其他问题也可随时告诉我。",
+      "anti_hallucination": {
+        "confidence": 0.8093,
+        "confidence_level": "high",
+        "faithfulness": 0.5,
+        "faithfulness_passed": false,
+        "hallucination_risk": "high",
+        "should_escalate": true,
+        "citations_count": 3,
+        "risks": [
+          "low_faithfulness: 一致性=0.5000 < 0.7，未支持事实 1/2"
+        ],
+        "facts_extracted": [
+          "3",
+          "5"
+        ],
+        "facts_supported": [
+          "3"
+        ],
+        "facts_unsupported": [
+          "5"
+        ]
+      }
+    }
+  ]
+}
