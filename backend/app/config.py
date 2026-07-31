@@ -94,7 +94,7 @@ class Settings(BaseSettings):
     # ===== Elasticsearch 混合检索（BM25 稀疏检索） =====
     # 对高频语言（英/日/德）在 ES 中配置多语言分词器做 BM25 检索
     # 与 Milvus 稠密检索通过 RRF 融合，跨语言召回率提升 35%
-    es_host: str = "localhost"
+    es_host: str = "http://localhost"
     es_port: int = 9200
     es_index_knowledge: str = "cs_knowledge_base"
     es_index_conversations: str = "cs_conversations"

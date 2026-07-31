@@ -138,7 +138,7 @@ def main():
             r_with = generate_reply_with_rag(tc["query"], tc["lang"], tc["intent"], enable_anti_halluc=True)
             acc_with = evaluate_factual_accuracy(r_with["reply"], tc["expected_facts"])
             ah = r_with.get("anti_hallucination_report", {})
-            risk = ah.get("risk_level", "N/A") if ah else "N/A"
+            risk = ah.get("hallucination_risk", "N/A") if ah else "N/A"
             conf = ah.get("confidence", 0) if ah else 0
             print("  [WITH anti-halluc] accuracy=" + str(round(acc_with["accuracy"], 2)) + " risk=" + str(risk) + " conf=" + str(round(conf, 2)))
             print("    Reply: " + r_with["reply"][:100] + "...")
@@ -216,7 +216,7 @@ def main():
         "details_without": results_without,
     }
 
-    output_path = os.path.join(os.path.dirname(__file__), "..", "app", "data", "eval", "anti_halluc_comparison.json")
+    output_path = os.path.join(os.path.dirname(__file__), "app", "data", "eval", "anti_halluc_comparison.json")
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
     print("\nResults saved: " + output_path)
