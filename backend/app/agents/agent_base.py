@@ -187,9 +187,12 @@ class AgentBase:
 
         try:
             from app.rag.anti_hallucination import check_reply, annotate_reply
+            # Jaeger 追踪：反幻觉校验
+            from app.services import tracer
             query = state.get("message", "")
             intent = state.get("intent", "")
-            report = check_reply(query, rag_sources, reply_zh, intent=intent)
+            with tracer.span("chat.anti_hallucination", {"agent": self.agent_name, "intent": intent}):
+                report = check_reply(query, rag_sources, reply_zh, intent=intent)
             report_dict = report.dict() if hasattr(report, "dict") else dict(report)
 
             if report.should_escalate:

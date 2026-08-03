@@ -178,7 +178,7 @@
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "cs_ai_ratio * 100",
+          "expr": "cs_ai_ratio",
           "legendFormat": "AI处理率",
           "refId": "A"
         }
@@ -240,7 +240,7 @@
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "cs_handoff_rate * 100",
+          "expr": "cs_handoff_rate",
           "legendFormat": "转人工率",
           "refId": "A"
         }
@@ -302,7 +302,7 @@
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "cs_anti_hallucination_pass_rate * 100",
+          "expr": "cs_anti_hallucination_pass_rate",
           "legendFormat": "反幻觉通过率",
           "refId": "A"
         }

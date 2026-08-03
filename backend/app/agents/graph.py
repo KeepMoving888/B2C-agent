@@ -65,8 +65,11 @@ def analyze_node(state: AgentState) -> AgentState:
     """分析节点：意图识别 + 置信度评分 + 情感分析"""
     message = state.get("message", "")
 
-    intent, confidence = detect_intent(message)
-    sentiment = analyze_sentiment(message)
+    # Jaeger 追踪：意图分析节点
+    from app.services import tracer
+    with tracer.span("chat.analyze", {"message": message[:100]}):
+        intent, confidence = detect_intent(message)
+        sentiment = analyze_sentiment(message)
 
     # 初始化协作控制字段
     state = {
@@ -130,7 +133,10 @@ def rag_node(state: AgentState) -> AgentState:
 
 def initial_route_node(state: AgentState) -> AgentState:
     """初始路由节点：选择首个 Agent"""
-    target = initial_route(state)
+    # Jaeger 追踪：路由节点
+    from app.services import tracer
+    with tracer.span("chat.route", {"intent": state.get("intent", "")}):
+        target = initial_route(state)
     state = {**state, "route_target": target, "current_agent": target}
     state = record_trace(state, "route", "controller",
                          f"初始路由 → {AGENT_NAMES.get(target, target)}",
@@ -139,23 +145,38 @@ def initial_route_node(state: AgentState) -> AgentState:
 
 
 def consultation_node(state: AgentState) -> AgentState:
-    return _agents["consultation"].process(state)
+    # Jaeger 追踪：Agent 执行
+    from app.services import tracer
+    with tracer.span("chat.agent", {"agent": "consultation"}):
+        return _agents["consultation"].process(state)
 
 
 def order_node(state: AgentState) -> AgentState:
-    return _agents["order"].process(state)
+    # Jaeger 追踪：Agent 执行
+    from app.services import tracer
+    with tracer.span("chat.agent", {"agent": "order"}):
+        return _agents["order"].process(state)
 
 
 def aftersales_node(state: AgentState) -> AgentState:
-    return _agents["aftersales"].process(state)
+    # Jaeger 追踪：Agent 执行
+    from app.services import tracer
+    with tracer.span("chat.agent", {"agent": "aftersales"}):
+        return _agents["aftersales"].process(state)
 
 
 def compliance_node(state: AgentState) -> AgentState:
-    return _agents["compliance"].process(state)
+    # Jaeger 追踪：Agent 执行
+    from app.services import tracer
+    with tracer.span("chat.agent", {"agent": "compliance"}):
+        return _agents["compliance"].process(state)
 
 
 def human_handoff_node(state: AgentState) -> AgentState:
-    return _agents["human_handoff"].process(state)
+    # Jaeger 追踪：Agent 执行
+    from app.services import tracer
+    with tracer.span("chat.agent", {"agent": "human_handoff"}):
+        return _agents["human_handoff"].process(state)
 
 
 def route_after_initial(state: AgentState) -> str:
@@ -207,13 +228,16 @@ def route_after_agent(state: AgentState) -> str:
 
 def finalize_node(state: AgentState) -> AgentState:
     """收尾节点：补充路由说明 + trace 摘要"""
-    desc = route_desc(state)
-    chain = get_agent_chain(state)
-    state = record_trace(state, "finalize", "controller",
-                         f"流程完成，处理链长度={len(chain)}",
-                         AgentStatus.SUCCESS.value)
-    state = {**state, "route_desc": desc}
-    logger.info(f"流程完成，处理链：{' → '.join(chain)}")
+    # Jaeger 追踪：最终化节点
+    from app.services import tracer
+    with tracer.span("chat.finalize", {"agent_chain": ",".join(get_agent_chain(state))}):
+        desc = route_desc(state)
+        chain = get_agent_chain(state)
+        state = record_trace(state, "finalize", "controller",
+                             f"流程完成，处理链长度={len(chain)}",
+                             AgentStatus.SUCCESS.value)
+        state = {**state, "route_desc": desc}
+        logger.info(f"流程完成，处理链：{' → '.join(chain)}")
     return state
 
 
